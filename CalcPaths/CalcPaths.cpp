@@ -25,7 +25,7 @@ BEGIN_MESSAGE_MAP(CCalcPathsApp, CWinApp)
 	ON_COMMAND(ID_APP_ABOUT, &CCalcPathsApp::OnAppAbout)
 
 	//ON_COMMAND_EX(ID_SHORTEST_PATH, &CCalcPathsApp::onBuildPath)
-	ON_COMMAND_RANGE(ID_SHORTEST_PATH, ID_ONLY_ARCS, &CCalcPathsApp::onBuildPath)
+
 
 	// Стандартные команды по работе с файлами документов
 	ON_COMMAND(ID_FILE_NEW, &CWinApp::OnFileNew)
@@ -58,10 +58,6 @@ CCalcPathsApp::CCalcPathsApp() noexcept
 // Единственный объект CCalcPathsApp
 
 CCalcPathsApp theApp;
-
-Path g_resultPath;
-
-extern std::vector<Path> g_vecOfPaths;
 
 
 // Инициализация CCalcPathsApp
@@ -187,34 +183,7 @@ void CCalcPathsApp::OnAppAbout()
 
 // Обработчик сообщений CCalcPathsApp для построения путей
 
-void CCalcPathsApp::onBuildPath(UINT msg)
-{
-	if (g_vecOfPaths.size() == 0)
-	{
-		AfxMessageBox(_T("Не удалось выполнить команду"));
-		return;
-	}
 
-	std::unique_ptr<CTask> task;
-
-	switch (msg)
-	{
-	case ID_SHORTEST_PATH:
-		task  = std::make_unique<CTask>(std::make_unique<CShortestPath>());
-		break;
-	case ID_LONGEST_PATH:
-		task = std::make_unique<CTask>(std::make_unique<CLongestPath>());
-		break;
-	case ID_ONLY_LINES:
-		task = std::make_unique<CTask>(std::make_unique<COnlyLines>());
-		break;
-	case ID_ONLY_ARCS:
-		task = std::make_unique<CTask>(std::make_unique<COnlyArcs>());
-		break;
-	}
-
-	g_resultPath = task->DoAlgorithm(g_vecOfPaths);
-}
 
 
 

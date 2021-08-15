@@ -30,15 +30,13 @@ using namespace tinyxml2;
 #define new DEBUG_NEW
 #endif
 
-std::vector<Path> g_vecOfPaths;
-
 
 // CCalcPathsDoc
 
 IMPLEMENT_DYNCREATE(CCalcPathsDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CCalcPathsDoc, CDocument)
-	ON_COMMAND(ID_FILE_OPEN, &CCalcPathsDoc::Serialize)
+	ON_COMMAND(ID_FILE_OPEN, &CCalcPathsDoc::OnFileOpen)
 END_MESSAGE_MAP()
 
 
@@ -68,9 +66,21 @@ BOOL CCalcPathsDoc::OnNewDocument()
 
 // Сериализация CCalcPathsDoc
 
-void CCalcPathsDoc::Serialize()
+void CCalcPathsDoc::Serialize(CArchive& ar)
 {
-	g_vecOfPaths.clear();
+	if (ar.IsStoring())
+	{
+
+	}
+	else
+	{
+		// TODO: добавьте код загрузки
+	}
+}
+
+void CCalcPathsDoc::OnFileOpen()
+{
+	m_vecOfPaths.clear();
 	CFileDialog dlgFile(true, _T("xml"), NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_EXPLORER, _T("XML files (*.xml)|*.xml||"));
 	dlgFile.DoModal();
 
@@ -82,32 +92,13 @@ void CCalcPathsDoc::Serialize()
 
 	if (doc.ErrorID() != XML_ERROR_FILE_NOT_FOUND && doc.ErrorID() != XML_ERROR_MISMATCHED_ELEMENT)
 	{
-		tinyxml2::XMLElement* rootElement = doc.RootElement();	
-		tinyxml2::XMLElement* objList = rootElement->ToElement();
+		tinyxml2::XMLElement* rootElement = doc.RootElement();
+		tinyxml2::XMLElement* w = rootElement->ToElement();
 		
-		for (tinyxml2::XMLElement* obj = objList->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
+		for (tinyxml2::XMLElement* obj = w->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
 		{
 			if (std::strcmp(obj->Value(), "Windowsize") == 0)
 			{
-				Point sp, fp;
-				std::vector<int>vec;
-
-				tinyxml2::XMLElement* valueList = obj->ToElement();
-				for (tinyxml2::XMLElement* val = valueList->FirstChildElement(); val != nullptr; val = val->NextSiblingElement())
-					vec.push_back(val->IntText());
-
-				CRect rect;
-				//POSITION p = this->GetFirstViewPosition();
-				//this->GetNextView(p)->GetClientRect(&rect);
-
-				//rect.bottom = vec[1];
-				//rect.right = vec[0];
-
-
-				HWND h = FindWindow(NULL, _T("Расчет путей"));
-				
-				GetClientRect(h, rect);
-				rect;
 				continue;
 			}
 			else
@@ -139,11 +130,11 @@ void CCalcPathsDoc::Serialize()
 						else
 						{
 							AfxMessageBox(_T("Документ не валидный"));
-							g_vecOfPaths.clear();
+							m_vecOfPaths.clear();
 							return;
 						}
 
-						ObjList.emplace_back(std::move(std::make_unique<CLineSegment>(sp, fp, Type::LineSegment)));
+						objList.emplace_back(std::move(std::make_shared<CLineSegment>(sp, fp, Type::LineSegment)));
 					}
 
 					if (std::strcmp(figure->Value(), "Arc") == 0)
@@ -173,16 +164,15 @@ void CCalcPathsDoc::Serialize()
 						else
 						{
 							AfxMessageBox(_T("Документ не валидный"));
-							g_vecOfPaths.clear();
+							m_vecOfPaths.clear();
 							return;
 						}
-
-						ObjList.emplace_back(std::move(std::make_unique<CArc>(sp, mp, fp, Type::Arc)));
+						objList.emplace_back(std::move(std::make_shared<CArc>(sp, mp, fp, Type::Arc)));
 					}
 				}
 			}
-			g_vecOfPaths.emplace_back(std::move(ObjList));
-			ObjList.clear();
+			m_vecOfPaths.emplace_back(std::move(objList));
+			objList.clear();
 		}
 	}
 }

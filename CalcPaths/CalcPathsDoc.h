@@ -14,14 +14,20 @@ protected: // создать только из сериализации
 	CCalcPathsDoc() noexcept;
 	DECLARE_DYNCREATE(CCalcPathsDoc)
 
+private:
+	Path objList;
 // Атрибуты
 public:
-	Path ObjList;
+	Path m_resultPath;
+	std::vector<Path> m_vecOfPaths;
 
 // Переопределение
 public:
 	virtual BOOL OnNewDocument();
-	virtual void Serialize();
+	virtual void Serialize(CArchive& ar);
+
+public:
+	afx_msg void OnFileOpen();
 
 #ifdef SHARED_HANDLERS
 	virtual void InitializeSearchContent();

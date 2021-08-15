@@ -21,15 +21,15 @@ public:
 class CLineSegment : public IFigure
 {
 private:
-	std::unique_ptr<Point> m_StartPoint;
-	std::unique_ptr<Point> m_FinishPoint;
+	Point m_startPoint;
+	Point m_finishPoint;
 
-	Type m_Type;
+	Type m_type;
 
 	double m_dblLength;
 
 public:
-	CLineSegment(Point& startPoint, Point& finishPoint, Type type);
+	CLineSegment(Point startPoint, Point finishPoint, Type type);
 
 	virtual Type GetType() override;
 	virtual double Length() override;
@@ -39,17 +39,17 @@ public:
 class CArc : public IFigure
 {
 private:
-	std::unique_ptr<Point> m_StartPoint;
-	std::unique_ptr<Point> m_MiddlePoint;
-	std::unique_ptr<Point> m_FinishPoint;
-	std::unique_ptr<bool> m_bClock;
+	Point m_startPoint;
+	Point m_middlePoint;
+	Point m_finishPoint;
+	bool m_bClock;
 
-	Type m_Type;
+	Type m_type;
 
 	double m_dblLength;
 
 public:
-	CArc(Point& startPoint, Point& middlePoint, Point& finishPoint, Type type);
+	CArc(Point startPoint, Point middlePoint, Point finishPoint, Type type);
 
 	virtual Type GetType() override;
 	virtual double Length() override;

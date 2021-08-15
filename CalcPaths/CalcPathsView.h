@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "BuildPaths.h"
 
 class CCalcPathsView : public CView
 {
@@ -26,6 +27,8 @@ protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
+
+	afx_msg void onBuildPath(UINT msg);
 
 // Реализация
 public:

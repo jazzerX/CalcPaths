@@ -27,6 +27,7 @@ BEGIN_MESSAGE_MAP(CCalcPathsView, CView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
+	ON_COMMAND_RANGE(ID_SHORTEST_PATH, ID_ONLY_ARCS, &CCalcPathsView::onBuildPath)
 END_MESSAGE_MAP()
 
 // Создание или уничтожение CCalcPathsView
@@ -101,3 +102,37 @@ CCalcPathsDoc* CCalcPathsView::GetDocument() const // встроена неот�
 
 
 // Обработчики сообщений CCalcPathsView
+
+void CCalcPathsView::onBuildPath(UINT msg)
+{
+	CCalcPathsDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
+
+	if (pDoc->m_vecOfPaths.size() == 0)
+	{
+		AfxMessageBox(_T("Не удалось выполнить команду"));
+		return;
+	}
+
+	std::unique_ptr<CTask> task;
+
+	switch (msg)
+	{
+	case ID_SHORTEST_PATH:
+		task = std::make_unique<CTask>(std::make_unique<CShortestPath>());
+		break;
+	case ID_LONGEST_PATH:
+		task = std::make_unique<CTask>(std::make_unique<CLongestPath>());
+		break;
+	case ID_ONLY_LINES:
+		task = std::make_unique<CTask>(std::make_unique<COnlyLines>());
+		break;
+	case ID_ONLY_ARCS:
+		task = std::make_unique<CTask>(std::make_unique<COnlyArcs>());
+		break;
+	}
+
+	pDoc->m_resultPath = task->Run(pDoc->m_vecOfPaths);
+}

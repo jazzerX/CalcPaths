@@ -18,7 +18,6 @@ class CCalcPathsApp : public CWinApp
 {
 public:
 	CCalcPathsApp() noexcept;
-	afx_msg void onBuildPath(UINT msg);
 
 // Переопределение
 public:

@@ -74,23 +74,23 @@ Path COnlyArcs::MakePath(std::vector<Path> vecPaths)
 
 CTask::CTask(std::shared_ptr<IBuildPath> path)
 {
-	this->m_BuildPath = std::move(path);
+	this->m_buildPath = std::move(path);
 }
 
 CTask::~CTask()
 {
-	m_BuildPath.~shared_ptr();
+	m_buildPath.~shared_ptr();
 }
 
 void CTask::SetStrategy(std::shared_ptr<IBuildPath> path)
 {
-	m_BuildPath.~shared_ptr();
-	this->m_BuildPath = std::move(path);
+	m_buildPath.~shared_ptr();
+	this->m_buildPath = std::move(path);
 }
 
-Path CTask::DoAlgorithm(std::vector<Path> vecPaths)
+Path CTask::Run(std::vector<Path> vecPaths)
 {
-	return this->m_BuildPath->MakePath(std::move(vecPaths));
+	return this->m_buildPath->MakePath(std::move(vecPaths));
 }
 
 

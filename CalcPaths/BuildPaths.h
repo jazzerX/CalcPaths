@@ -35,12 +35,12 @@ class COnlyArcs : public IBuildPath
 class CTask 
 {
 private:
-	std::shared_ptr<IBuildPath> m_BuildPath;
+	std::shared_ptr<IBuildPath> m_buildPath;
 
 public:
 	CTask(std::shared_ptr<IBuildPath> path);
 	~CTask();
 
 	void SetStrategy(std::shared_ptr<IBuildPath> path);
-	Path DoAlgorithm(std::vector<Path>);
+	Path Run(std::vector<Path>);
 };
