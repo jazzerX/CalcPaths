@@ -10,20 +10,10 @@
 #include "CalcPaths.h"
 #endif
 
-//#import "msxml6.dll"
-//using namespace MSXML2;
-
-
 
 #include "CalcPathsDoc.h"
 
 #include <propkey.h>
-
-//#include "xml/tinyxml.h"
-//#include "xml/tinystr.h"
-
-#include "xml/tinyxml2.h"
-using namespace tinyxml2;
 
 
 #ifdef _DEBUG
@@ -78,9 +68,35 @@ void CCalcPathsDoc::Serialize(CArchive& ar)
 	}
 }
 
+// Возвращает значение для х или у. Иначе бросает исключение
+int CCalcPathsDoc::GetValue(XMLElement* value)
+{
+	if (value != nullptr)
+	{
+		XMLElement* valueList = value->ToElement();
+		return value->IntText();
+	}
+	else
+	{
+		throw _T("Документ не валидный");
+	}
+}
+
+
+Point CCalcPathsDoc::GetPoint(XMLElement* point)
+{
+	XMLElement* pointList = point->ToElement();
+	Point res;
+
+	res.m_nx = GetValue(pointList->FirstChildElement("x"));
+	res.m_ny = GetValue(pointList->FirstChildElement("y"));
+
+	return res;
+}
+
 void CCalcPathsDoc::OnFileOpen()
 {
-	m_vecOfPaths.clear();
+    m_vecOfPaths.clear();
 	CFileDialog dlgFile(true, _T("xml"), NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_EXPLORER, _T("XML files (*.xml)|*.xml||"));
 	dlgFile.DoModal();
 
@@ -92,91 +108,74 @@ void CCalcPathsDoc::OnFileOpen()
 
 	if (doc.ErrorID() != XML_ERROR_FILE_NOT_FOUND && doc.ErrorID() != XML_ERROR_MISMATCHED_ELEMENT)
 	{
-		tinyxml2::XMLElement* rootElement = doc.RootElement();
-		tinyxml2::XMLElement* w = rootElement->ToElement();
-		
-		for (tinyxml2::XMLElement* obj = w->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
+		XMLElement* rootElement = doc.RootElement();
+		XMLElement* w = rootElement->ToElement();
+		for (XMLElement* obj = w->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
 		{
 			if (std::strcmp(obj->Value(), "Windowsize") == 0)
 			{
+				// Здесь должен изменяться размер окна
 				continue;
 			}
 			else
 			{
-				tinyxml2::XMLElement* figureList = obj->ToElement();
-				for (tinyxml2::XMLElement* figure = figureList->FirstChildElement(); figure != nullptr; figure = figure->NextSiblingElement())
+				// Обрабатываем теги Objects
+				XMLElement* figureList = obj->ToElement();
+				for (XMLElement* figure = figureList->FirstChildElement(); figure != nullptr; figure = figure->NextSiblingElement())
 				{
 					if (std::strcmp(figure->Value(), "LineSegment") == 0)
 					{
 						Point sp, fp;
-						std::vector<int>vec;
+						XMLElement* pointList = figure->ToElement();
 
-						tinyxml2::XMLElement* pointList = figure->ToElement();
-						for (tinyxml2::XMLElement* point = pointList->FirstChildElement(); point != nullptr; point = point->NextSiblingElement())
+						try
 						{
-							tinyxml2::XMLElement* valueList = point->ToElement();
-							for (tinyxml2::XMLElement* val = valueList->FirstChildElement(); val != nullptr; val = val->NextSiblingElement())
-								vec.emplace_back(val->IntText());
+							sp = GetPoint(pointList->FirstChildElement("StartPoint"));
+							fp = GetPoint(pointList->FirstChildElement("FinishPoint"));
+
+							objList.emplace_back(std::move(std::make_shared<CLineSegment>(sp, fp, Type::LineSegment)));
 						}
-
-						if (vec.size() == 4)
+						catch (LPCTSTR exception)
 						{
-							sp.m_nx = vec[0];
-							sp.m_ny = vec[1];
-
-							fp.m_nx = vec[2];
-							fp.m_ny = vec[3];
-						}
-						else
-						{
-							AfxMessageBox(_T("Документ не валидный"));
+							AfxMessageBox(exception);
 							m_vecOfPaths.clear();
+							objList.clear();
 							return;
 						}
-
-						objList.emplace_back(std::move(std::make_shared<CLineSegment>(sp, fp, Type::LineSegment)));
 					}
 
 					if (std::strcmp(figure->Value(), "Arc") == 0)
 					{
 						Point sp, mp, fp;
-						std::vector<int>vec;
+						XMLElement* pointList = figure->ToElement();
 
-						tinyxml2::XMLElement* pointList = figure->ToElement();
-						for (tinyxml2::XMLElement* point = pointList->FirstChildElement(); point != nullptr; point = point->NextSiblingElement())
+						try
 						{
-							tinyxml2::XMLElement* valueList = point->ToElement();
-							for (tinyxml2::XMLElement* val = valueList->FirstChildElement(); val != nullptr; val = val->NextSiblingElement())
-								vec.emplace_back(val->IntText());
+							sp = GetPoint(pointList->FirstChildElement("StartPoint"));
+							mp = GetPoint(pointList->FirstChildElement("CenterPoint"));
+							fp = GetPoint(pointList->FirstChildElement("FinishPoint"));
+							objList.emplace_back(std::move(std::make_shared<CArc>(sp, mp, fp, Type::Arc)));
 						}
-
-						if (vec.size() == 6)
+						catch (LPCTSTR exception)
 						{
-							sp.m_nx = vec[0];
-							sp.m_ny = vec[1];
-
-							mp.m_nx = vec[2];
-							mp.m_ny = vec[3];
-
-							fp.m_nx = vec[4];
-							fp.m_ny = vec[5];
-						}
-						else
-						{
-							AfxMessageBox(_T("Документ не валидный"));
+							AfxMessageBox(exception);
 							m_vecOfPaths.clear();
+							objList.clear();
 							return;
 						}
-						objList.emplace_back(std::move(std::make_shared<CArc>(sp, mp, fp, Type::Arc)));
 					}
 				}
 			}
 			m_vecOfPaths.emplace_back(std::move(objList));
 			objList.clear();
-		}
+		}	
+	}
+	else
+	{
+		AfxMessageBox(_T("Документ не валидный"));
+		return;
 	}
 }
-
 
 #ifdef SHARED_HANDLERS
 

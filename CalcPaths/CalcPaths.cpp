@@ -180,10 +180,3 @@ void CCalcPathsApp::OnAppAbout()
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
-
-// Обработчик сообщений CCalcPathsApp для построения путей
-
-
-
-
-

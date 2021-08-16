@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 
+// Реализация паттерна проектирования "Фабричный метод"
 
 enum class Type { LineSegment, Arc };
 

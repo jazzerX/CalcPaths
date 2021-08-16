@@ -5,7 +5,8 @@
 #include "Figures.h"
 #include "BuildPaths.h"
 
-
+#include "xml/tinyxml2.h"
+using namespace tinyxml2;
 
 
 class CCalcPathsDoc : public CDocument
@@ -20,6 +21,10 @@ private:
 public:
 	Path m_resultPath;
 	std::vector<Path> m_vecOfPaths;
+
+private:
+	int GetValue(XMLElement* value);
+	Point GetPoint(XMLElement* point);
 
 // Переопределение
 public:
