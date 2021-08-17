@@ -62,7 +62,7 @@ Type CArc::GetType() const
 }
 
 
-void CArc::Draw() const
+void CArc::Draw(std::unique_ptr<IDrawer>& drawer) const
 {
-
+	drawer->DrawArc(m_startPoint, m_middlePoint, m_finishPoint);
 }

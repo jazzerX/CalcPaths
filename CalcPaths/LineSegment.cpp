@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "LineSegment.h"
+#include "gdidrawer.h"
+
 
 CLineSegment::CLineSegment(Point startPoint, Point finishPoint, Type type)
 {
@@ -46,9 +48,7 @@ Point CLineSegment::GetPoint(tinyxml2::XMLElement* point)
 }
 
 
-
-
-void CLineSegment::Draw() const
+void CLineSegment::Draw(std::unique_ptr<IDrawer>& drawer) const
 {
-
+	drawer->DrawLine(m_startPoint, m_finishPoint);
 }

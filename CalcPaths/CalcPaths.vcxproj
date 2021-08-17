@@ -193,8 +193,10 @@
     <ClInclude Include="CalcPaths.h" />
     <ClInclude Include="CalcPathsDoc.h" />
     <ClInclude Include="CalcPathsView.h" />
+    <ClInclude Include="Drawer.h" />
     <ClInclude Include="Figures.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="gdidrawer.h" />
     <ClInclude Include="LineSegment.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
@@ -209,6 +211,7 @@
     <ClCompile Include="CalcPathsDoc.cpp" />
     <ClCompile Include="CalcPathsView.cpp" />
     <ClCompile Include="Figures.cpp" />
+    <ClCompile Include="gdidrawer.cpp" />
     <ClCompile Include="LineSegment.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="pch.cpp">
@@ -217,6 +220,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Point.h" />
     <ClCompile Include="xml\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>

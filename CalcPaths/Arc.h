@@ -18,9 +18,10 @@ public:
 
 	virtual Type GetType() const override;
 	virtual double GetLength() const override;
+	virtual void Draw(std::unique_ptr<IDrawer>& drawer) const override;
+
 	static Point GetPoint(tinyxml2::XMLElement* point);
 	static int GetValue(tinyxml2::XMLElement* value);
-	virtual void Draw() const override;
 
 private:
 	double CalcLength();

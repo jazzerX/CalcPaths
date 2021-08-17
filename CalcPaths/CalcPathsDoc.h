@@ -21,7 +21,7 @@ private:
 
 // Атрибуты
 public:
-	std::unique_ptr<Path> m_resultPath;
+	std::shared_ptr<Path> m_resultPath;
 	std::list<Path> m_vecOfPaths;
 
 

@@ -36,7 +36,6 @@ END_MESSAGE_MAP()
 CCalcPathsDoc::CCalcPathsDoc() noexcept
 {
 	// TODO: добавьте код для одноразового вызова конструктора
-
 }
 
 CCalcPathsDoc::~CCalcPathsDoc()
@@ -74,13 +73,17 @@ void CCalcPathsDoc::Serialize(CArchive& ar)
 void CCalcPathsDoc::OnFileOpen()
 {
 	Path objList;
-
-    m_vecOfPaths.clear();
-
+	CString csPathName;
 	CFileDialog dlgFile(true, _T("xml"), NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_EXPLORER, _T("XML files (*.xml)|*.xml||"));
-	dlgFile.DoModal();
 
-	CString csPathName = dlgFile.GetPathName();
+	if (dlgFile.DoModal() == IDOK)
+	{
+		m_vecOfPaths.clear();
+		csPathName = dlgFile.GetPathName();
+	}
+	else 
+		return;
+
 	CStringA filePath(csPathName);
 
 	tinyxml2::XMLDocument doc;
@@ -154,8 +157,6 @@ void CCalcPathsDoc::OnFileOpen()
 		AfxMessageBox(_T("Документ не валидный"));
 		return;
 	}
-
-	m_vecOfPaths.size();
 }
 
 #ifdef SHARED_HANDLERS

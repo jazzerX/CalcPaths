@@ -6,6 +6,8 @@
 
 #include "BuildPaths.h"
 
+#include "gdidrawer.h"
+
 class CCalcPathsView : public CView
 {
 protected: // создать только из сериализации
@@ -15,6 +17,9 @@ protected: // создать только из сериализации
 // Атрибуты
 public:
 	CCalcPathsDoc* GetDocument() const;
+
+private:
+	std::unique_ptr<IDrawer> m_drawer;
 
 // Операции
 public:
@@ -43,6 +48,8 @@ protected:
 // Созданные функции схемы сообщений
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnGdiDrawer();
 };
 
 #ifndef _DEBUG  // версия отладки в CalcPathsView.cpp

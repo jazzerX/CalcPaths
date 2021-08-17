@@ -28,13 +28,14 @@ BEGIN_MESSAGE_MAP(CCalcPathsView, CView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_COMMAND_RANGE(ID_SHORTEST_PATH, ID_ONLY_ARCS, &CCalcPathsView::onBuildPath)
+	ON_COMMAND(ID_GDI_DRAWER, &CCalcPathsView::OnGdiDrawer)
 END_MESSAGE_MAP()
 
 // Создание или уничтожение CCalcPathsView
 
 CCalcPathsView::CCalcPathsView() noexcept
 {
-	// TODO: добавьте код создания
+
 
 }
 
@@ -59,6 +60,11 @@ void CCalcPathsView::OnDraw(CDC* pDC)
 	if (!pDoc)
 		return;
 
+	m_drawer = std::make_unique<CGDIDrawer>(pDC);
+
+	if (pDoc->m_resultPath != nullptr)
+		for (auto& figure : *pDoc->m_resultPath)
+			figure->Draw(m_drawer);
 }
 
 // Печать CCalcPathsView
@@ -135,8 +141,18 @@ void CCalcPathsView::onBuildPath(UINT msg)
 	}
 
 	pDoc->m_resultPath = task->Run(pDoc->m_vecOfPaths);
-	if (pDoc->m_resultPath)
+
+	if (pDoc->m_resultPath == nullptr)
 	{
-		pDoc->m_resultPath->size();
+		AfxMessageBox(_T("Не удалось построить путь"));
+		return;
 	}
+
+	CClientDC aDc(this);
+	OnDraw(&aDc);
+}
+
+void CCalcPathsView::OnGdiDrawer()
+{
+
 }

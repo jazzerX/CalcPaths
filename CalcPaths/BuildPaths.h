@@ -1,41 +1,41 @@
-#pragma once
+п»ї#pragma once
 
 #include "Figures.h"
 #include <list>
 
-using Path = std::list<std::unique_ptr<IFigure>>;
+using Path = std::list<std::shared_ptr<IFigure>>;
 
-// Реализация паттерна проектирования "Стратегия"
+// Р РµР°Р»РёР·Р°С†РёСЏ РїР°С‚С‚РµСЂРЅР° РїСЂРѕРµРєС‚РёСЂРѕРІР°РЅРёСЏ "РЎС‚СЂР°С‚РµРіРёСЏ"
 
-// Интерфейс
+// РРЅС‚РµСЂС„РµР№СЃ
 class IBuildPath
 {
 public:
-	virtual std::unique_ptr<Path> MakePath(std::list<Path>&) = 0;
+	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) = 0;
 };
 
-// Классы, реализующие построение путей
+// РљР»Р°СЃСЃС‹, СЂРµР°Р»РёР·СѓСЋС‰РёРµ РїРѕСЃС‚СЂРѕРµРЅРёРµ РїСѓС‚РµР№
 class CShortestPath : public IBuildPath
 {
-	virtual std::unique_ptr<Path> MakePath(std::list<Path>&) override;
+	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) override;
 };
 
 class CLongestPath : public IBuildPath
 {
-	virtual std::unique_ptr<Path> MakePath(std::list<Path>&) override;
+	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) override;
 };
 
 class COnlyLines : public IBuildPath
 {
-	virtual std::unique_ptr<Path> MakePath(std::list<Path>&) override;
+	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) override;
 };
 
 class COnlyArcs : public IBuildPath
 {
-	virtual std::unique_ptr<Path> MakePath(std::list<Path>&) override;
+	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) override;
 };
 
-// Класс, отвечающий за переключение и запуск стратегии
+// РљР»Р°СЃСЃ, РѕС‚РІРµС‡Р°СЋС‰РёР№ Р·Р° РїРµСЂРµРєР»СЋС‡РµРЅРёРµ Рё Р·Р°РїСѓСЃРє СЃС‚СЂР°С‚РµРіРёРё
 class CTask 
 {
 private:
@@ -45,5 +45,5 @@ public:
 	CTask(std::unique_ptr<IBuildPath> path);
 
 	void SetStrategy(std::unique_ptr<IBuildPath> path);
-	std::unique_ptr<Path> Run(std::list<Path>&);
+	std::shared_ptr<Path> Run(std::list<Path>&);
 };

@@ -4,11 +4,11 @@
 #include <cfloat>
 
 
-std::unique_ptr<Path> CShortestPath::MakePath(std::list<Path>& listPaths)
+std::shared_ptr<Path> CShortestPath::MakePath(std::list<Path>& listPaths)
 {
 	double nMinLength = DBL_MAX;
 	double nCurrLength;
-	std::unique_ptr<Path> res = nullptr;
+	std::shared_ptr<Path> res = nullptr;
 	for (auto& objs : listPaths)
 	{
 		nCurrLength = 0;
@@ -18,17 +18,17 @@ std::unique_ptr<Path> CShortestPath::MakePath(std::list<Path>& listPaths)
 		if (nCurrLength < nMinLength)
 		{
 			nMinLength = nCurrLength;
-			res = std::make_unique<Path>(std::move(objs));
+			res = std::make_shared<Path>(objs);
 		}
 	}
-	return std::move(res);
+	return res;
 }
 
-std::unique_ptr<Path> CLongestPath::MakePath(std::list<Path>& listPaths)
+std::shared_ptr<Path> CLongestPath::MakePath(std::list<Path>& listPaths)
 {
 	double nMaxLength = DBL_MIN;
 	double nCurrLength;
-	std::unique_ptr<Path> res = nullptr;
+	std::shared_ptr<Path> res = nullptr;
 	for (auto& objs : listPaths)
 	{
 		nCurrLength = 0;
@@ -38,18 +38,19 @@ std::unique_ptr<Path> CLongestPath::MakePath(std::list<Path>& listPaths)
 		if (nCurrLength > nMaxLength)
 		{
 			nMaxLength = nCurrLength;
-			res = std::make_unique<Path>(std::move(objs));
+			res = std::make_shared<Path>(objs);
 		}
 	}
-	return std::move(res);
+	return res;
 }
 
-std::unique_ptr<Path> COnlyLines::MakePath(std::list<Path>& listPaths)
+std::shared_ptr<Path> COnlyLines::MakePath(std::list<Path>& listPaths)
 {
-	std::unique_ptr<Path> res = nullptr;
-	bool bIsLines = true;
+	std::shared_ptr<Path> res = nullptr;
+
 	for (auto& objs : listPaths)
 	{
+		bool bIsLines = true;
 		for (auto& path : objs)
 			if (path->GetType() != Type::LineSegment)
 			{
@@ -57,31 +58,32 @@ std::unique_ptr<Path> COnlyLines::MakePath(std::list<Path>& listPaths)
 				break;
 			}
 
-		if (bIsLines)
-			res = std::make_unique<Path>(std::move(objs));
+		if (bIsLines) 
+			res = std::make_shared<Path>(objs);
 	}
 
-	return std::move(res);
+	return res;
 }
 
-std::unique_ptr<Path> COnlyArcs::MakePath(std::list<Path>& listPaths)
+std::shared_ptr<Path> COnlyArcs::MakePath(std::list<Path>& listPaths)
 {
-	std::unique_ptr<Path> res = nullptr;
-	bool bIsLines = true;
+	std::shared_ptr<Path> res = nullptr;
+	
 	for (auto& objs : listPaths)
 	{
+		bool bIsArcs = true;
 		for (auto& path : objs)
 			if (path->GetType() != Type::Arc)
 			{
-				bIsLines = false;
+				bIsArcs = false;
 				break;
 			}
 
-		if (bIsLines)
-			res = std::make_unique<Path>(std::move(objs));
+		if (bIsArcs)
+			res = std::make_shared<Path>(objs);
 	}
 
-	return std::move(res);
+	return res;
 }
 
 CTask::CTask(std::unique_ptr<IBuildPath> path)
@@ -95,7 +97,7 @@ void CTask::SetStrategy(std::unique_ptr<IBuildPath> path)
 	m_buildPath = std::move(path);
 }
 
-std::unique_ptr<Path> CTask::Run(std::list<Path>& listPaths)
+std::shared_ptr<Path> CTask::Run(std::list<Path>& listPaths)
 {
-	return std::move(m_buildPath->MakePath(listPaths));
+	return m_buildPath->MakePath(listPaths);
 }
