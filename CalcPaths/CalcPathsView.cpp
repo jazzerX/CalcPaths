@@ -135,4 +135,8 @@ void CCalcPathsView::onBuildPath(UINT msg)
 	}
 
 	pDoc->m_resultPath = task->Run(pDoc->m_vecOfPaths);
+	if (pDoc->m_resultPath)
+	{
+		pDoc->m_resultPath->size();
+	}
 }

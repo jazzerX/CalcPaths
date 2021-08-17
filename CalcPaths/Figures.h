@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 
+#include "xml/tinyxml2.h"
+
 // Реализация паттерна проектирования "Фабричный метод"
 
 enum class Type { LineSegment, Arc };
@@ -14,49 +16,12 @@ struct Point
 class IFigure
 {
 public:
-	virtual Type GetType() = 0;
-	virtual double  Length() = 0;
-	virtual void Draw() = 0;
+	virtual Type GetType() const = 0;
+	virtual double GetLength() const = 0;
+	static Point GetPoint(tinyxml2::XMLElement* point);
+	static int GetValue(tinyxml2::XMLElement* value);
+	virtual void Draw() const = 0;
 };
 
-class CLineSegment : public IFigure
-{
-private:
-	Point m_startPoint;
-	Point m_finishPoint;
 
-	Type m_type;
-
-	double m_dblLength;
-
-public:
-	CLineSegment(Point startPoint, Point finishPoint, Type type);
-
-	virtual Type GetType() override;
-	virtual double Length() override;
-	virtual void Draw() override;
-};
-
-class CArc : public IFigure
-{
-private:
-	Point m_startPoint;
-	Point m_middlePoint;
-	Point m_finishPoint;
-	bool m_bClock;
-
-	Type m_type;
-
-	double m_dblLength;
-
-public:
-	CArc(Point startPoint, Point middlePoint, Point finishPoint, Type type);
-
-	virtual Type GetType() override;
-	virtual double Length() override;
-	virtual void Draw() override;
-
-private:
-	double CalcLength();
-};
 

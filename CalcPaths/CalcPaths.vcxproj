@@ -188,12 +188,14 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Arc.h" />
     <ClInclude Include="BuildPaths.h" />
     <ClInclude Include="CalcPaths.h" />
     <ClInclude Include="CalcPathsDoc.h" />
     <ClInclude Include="CalcPathsView.h" />
     <ClInclude Include="Figures.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="LineSegment.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -201,11 +203,13 @@
     <ClInclude Include="xml\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Arc.cpp" />
     <ClCompile Include="BuildPaths.cpp" />
     <ClCompile Include="CalcPaths.cpp" />
     <ClCompile Include="CalcPathsDoc.cpp" />
     <ClCompile Include="CalcPathsView.cpp" />
     <ClCompile Include="Figures.cpp" />
+    <ClCompile Include="LineSegment.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

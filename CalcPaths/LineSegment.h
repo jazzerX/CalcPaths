@@ -1,0 +1,22 @@
+#pragma once
+#include "Figures.h"
+
+class CLineSegment : public IFigure
+{
+private:
+	Point m_startPoint;
+	Point m_finishPoint;
+
+	Type m_type;
+
+	double m_dblLength;
+
+public:
+	CLineSegment(Point startPoint, Point finishPoint, Type type);
+
+	virtual Type GetType() const override;
+	virtual double GetLength() const override;
+	static Point GetPoint(tinyxml2::XMLElement* point);
+	static int GetValue(tinyxml2::XMLElement* value);
+	virtual void Draw() const override;
+};

@@ -2,11 +2,13 @@
 
 #include <vector>
 #include <string>
+
 #include "Figures.h"
+#include "LineSegment.h"
+#include "Arc.h"
+
 #include "BuildPaths.h"
 
-#include "xml/tinyxml2.h"
-using namespace tinyxml2;
 
 
 class CCalcPathsDoc : public CDocument
@@ -16,15 +18,12 @@ protected: // создать только из сериализации
 	DECLARE_DYNCREATE(CCalcPathsDoc)
 
 private:
-	Path objList;
+
 // Атрибуты
 public:
-	Path m_resultPath;
-	std::vector<Path> m_vecOfPaths;
+	std::unique_ptr<Path> m_resultPath;
+	std::list<Path> m_vecOfPaths;
 
-private:
-	int GetValue(XMLElement* value);
-	Point GetPoint(XMLElement* point);
 
 // Переопределение
 public:

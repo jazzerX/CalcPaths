@@ -8,6 +8,7 @@
 // и поиска; позволяет совместно использовать код документа в данным проекте.
 #ifndef SHARED_HANDLERS
 #include "CalcPaths.h"
+#include "MainFrm.h"
 #endif
 
 
@@ -69,34 +70,13 @@ void CCalcPathsDoc::Serialize(CArchive& ar)
 }
 
 // Возвращает значение для х или у. Иначе бросает исключение
-int CCalcPathsDoc::GetValue(XMLElement* value)
-{
-	if (value != nullptr)
-	{
-		XMLElement* valueList = value->ToElement();
-		return value->IntText();
-	}
-	else
-	{
-		throw _T("Документ не валидный");
-	}
-}
-
-
-Point CCalcPathsDoc::GetPoint(XMLElement* point)
-{
-	XMLElement* pointList = point->ToElement();
-	Point res;
-
-	res.m_nx = GetValue(pointList->FirstChildElement("x"));
-	res.m_ny = GetValue(pointList->FirstChildElement("y"));
-
-	return res;
-}
 
 void CCalcPathsDoc::OnFileOpen()
 {
+	Path objList;
+
     m_vecOfPaths.clear();
+
 	CFileDialog dlgFile(true, _T("xml"), NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_EXPLORER, _T("XML files (*.xml)|*.xml||"));
 	dlgFile.DoModal();
 
@@ -106,34 +86,33 @@ void CCalcPathsDoc::OnFileOpen()
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile(filePath);
 
-	if (doc.ErrorID() != XML_ERROR_FILE_NOT_FOUND && doc.ErrorID() != XML_ERROR_MISMATCHED_ELEMENT)
+	if (doc.ErrorID() != tinyxml2::XML_ERROR_FILE_NOT_FOUND && doc.ErrorID() != tinyxml2::XML_ERROR_MISMATCHED_ELEMENT)
 	{
-		XMLElement* rootElement = doc.RootElement();
-		XMLElement* w = rootElement->ToElement();
-		for (XMLElement* obj = w->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
+		tinyxml2::XMLElement* rootElement = doc.RootElement();
+		tinyxml2::XMLElement* w = rootElement->ToElement();
+		for (tinyxml2::XMLElement* obj = w->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
 		{
 			if (std::strcmp(obj->Value(), "Windowsize") == 0)
 			{
-				// Здесь должен изменяться размер окна
+				tinyxml2::XMLElement* figureList = obj->FirstChildElement("FinishPoint");
 				continue;
 			}
 			else
 			{
 				// Обрабатываем теги Objects
-				XMLElement* figureList = obj->ToElement();
-				for (XMLElement* figure = figureList->FirstChildElement(); figure != nullptr; figure = figure->NextSiblingElement())
+				tinyxml2::XMLElement* figureList = obj->ToElement();
+				for (tinyxml2::XMLElement* figure = figureList->FirstChildElement(); figure != nullptr; figure = figure->NextSiblingElement())
 				{
 					if (std::strcmp(figure->Value(), "LineSegment") == 0)
 					{
 						Point sp, fp;
-						XMLElement* pointList = figure->ToElement();
-
+						tinyxml2::XMLElement* pointList = figure->ToElement();
 						try
-						{
-							sp = GetPoint(pointList->FirstChildElement("StartPoint"));
-							fp = GetPoint(pointList->FirstChildElement("FinishPoint"));
+						{							
+							sp = CLineSegment::GetPoint(pointList->FirstChildElement("StartPoint"));
+							fp = CLineSegment::GetPoint(pointList->FirstChildElement("FinishPoint"));
 
-							objList.emplace_back(std::move(std::make_shared<CLineSegment>(sp, fp, Type::LineSegment)));
+							objList.emplace_back(std::move(std::make_unique<CLineSegment>(sp, fp, Type::LineSegment)));
 						}
 						catch (LPCTSTR exception)
 						{
@@ -147,14 +126,14 @@ void CCalcPathsDoc::OnFileOpen()
 					if (std::strcmp(figure->Value(), "Arc") == 0)
 					{
 						Point sp, mp, fp;
-						XMLElement* pointList = figure->ToElement();
-
+						tinyxml2::XMLElement* pointList = figure->ToElement();
 						try
 						{
-							sp = GetPoint(pointList->FirstChildElement("StartPoint"));
-							mp = GetPoint(pointList->FirstChildElement("CenterPoint"));
-							fp = GetPoint(pointList->FirstChildElement("FinishPoint"));
-							objList.emplace_back(std::move(std::make_shared<CArc>(sp, mp, fp, Type::Arc)));
+							sp = CArc::GetPoint(pointList->FirstChildElement("StartPoint"));
+							mp = CArc::GetPoint(pointList->FirstChildElement("CenterPoint"));
+							fp = CArc::GetPoint(pointList->FirstChildElement("FinishPoint"));
+
+							objList.emplace_back(std::move(std::make_unique<CArc>(sp, mp, fp, Type::Arc)));
 						}
 						catch (LPCTSTR exception)
 						{
@@ -175,6 +154,8 @@ void CCalcPathsDoc::OnFileOpen()
 		AfxMessageBox(_T("Документ не валидный"));
 		return;
 	}
+
+	m_vecOfPaths.size();
 }
 
 #ifdef SHARED_HANDLERS

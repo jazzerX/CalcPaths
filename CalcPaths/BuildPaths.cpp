@@ -4,94 +4,98 @@
 #include <cfloat>
 
 
-Path CShortestPath::MakePath(std::vector<Path> vecPaths)
+std::unique_ptr<Path> CShortestPath::MakePath(std::list<Path>& listPaths)
 {
 	double nMinLength = DBL_MAX;
-	int nMinIdx = 0;
 	double nCurrLength;
-
-	for (size_t i = 0; i < vecPaths.size(); i++)
+	std::unique_ptr<Path> res = nullptr;
+	for (auto& objs : listPaths)
 	{
 		nCurrLength = 0;
-		for (size_t j = 0; j < vecPaths[i].size(); j++)
-			nCurrLength += vecPaths[i][j]->Length();
+		for (const auto& path : objs)
+			nCurrLength += path->GetLength();
 
 		if (nCurrLength < nMinLength)
 		{
 			nMinLength = nCurrLength;
-			nMinIdx = i;
+			res = std::make_unique<Path>(std::move(objs));
 		}
 	}
-
-	return std::move(vecPaths[nMinIdx]);
+	return std::move(res);
 }
 
-Path CLongestPath::MakePath(std::vector<Path> vecPaths)
+std::unique_ptr<Path> CLongestPath::MakePath(std::list<Path>& listPaths)
 {
 	double nMaxLength = DBL_MIN;
-	int nMaxIdx = 0;
 	double nCurrLength;
-
-	for (size_t i = 0; i < vecPaths.size(); i++)
+	std::unique_ptr<Path> res = nullptr;
+	for (auto& objs : listPaths)
 	{
 		nCurrLength = 0;
-		for (size_t j = 0; j < vecPaths[i].size(); j++)
-			nCurrLength += vecPaths[i][j]->Length();
+		for (auto& path : objs)
+			nCurrLength += path->GetLength();
 
 		if (nCurrLength > nMaxLength)
 		{
 			nMaxLength = nCurrLength;
-			nMaxIdx = i;
+			res = std::make_unique<Path>(std::move(objs));
 		}
 	}
-
-	return std::move(vecPaths[nMaxIdx]);
+	return std::move(res);
 }
 
-Path COnlyLines::MakePath(std::vector<Path> vecPaths)
+std::unique_ptr<Path> COnlyLines::MakePath(std::list<Path>& listPaths)
 {
-	Path resPath;
+	std::unique_ptr<Path> res = nullptr;
+	bool bIsLines = true;
+	for (auto& objs : listPaths)
+	{
+		for (auto& path : objs)
+			if (path->GetType() != Type::LineSegment)
+			{
+				bIsLines = false;
+				break;
+			}
 
-	for (size_t i = 0; i < vecPaths.size(); i++)
-		for (size_t j = 0; j < vecPaths[i].size(); j++)
-			if (vecPaths[i][j]->GetType() == Type::LineSegment)
-				resPath.push_back(vecPaths[i][j]);
+		if (bIsLines)
+			res = std::make_unique<Path>(std::move(objs));
+	}
 
-	return std::move(resPath);
+	return std::move(res);
 }
 
-Path COnlyArcs::MakePath(std::vector<Path> vecPaths)
+std::unique_ptr<Path> COnlyArcs::MakePath(std::list<Path>& listPaths)
 {
-	Path resPath;
+	std::unique_ptr<Path> res = nullptr;
+	bool bIsLines = true;
+	for (auto& objs : listPaths)
+	{
+		for (auto& path : objs)
+			if (path->GetType() != Type::Arc)
+			{
+				bIsLines = false;
+				break;
+			}
 
-	for (size_t i = 0; i < vecPaths.size(); i++)
-		for (size_t j = 0; j < vecPaths[i].size(); j++)
-			if (vecPaths[i][j]->GetType() == Type::Arc)
-				resPath.push_back(vecPaths[i][j]);
+		if (bIsLines)
+			res = std::make_unique<Path>(std::move(objs));
+	}
 
-	return std::move(resPath);
+	return std::move(res);
 }
 
-CTask::CTask(std::shared_ptr<IBuildPath> path)
+CTask::CTask(std::unique_ptr<IBuildPath> path)
 {
-	this->m_buildPath = std::move(path);
+	m_buildPath = std::move(path);
 }
 
-CTask::~CTask()
+void CTask::SetStrategy(std::unique_ptr<IBuildPath> path)
 {
-	m_buildPath.~shared_ptr();
+	m_buildPath.~unique_ptr();
+	m_buildPath = std::move(path);
 }
 
-void CTask::SetStrategy(std::shared_ptr<IBuildPath> path)
+std::unique_ptr<Path> CTask::Run(std::list<Path>& listPaths)
 {
-	m_buildPath.~shared_ptr();
-	this->m_buildPath = std::move(path);
+	return std::move(m_buildPath->MakePath(listPaths));
 }
-
-Path CTask::Run(std::vector<Path> vecPaths)
-{
-	return this->m_buildPath->MakePath(std::move(vecPaths));
-}
-
-
-
