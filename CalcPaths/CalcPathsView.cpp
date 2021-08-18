@@ -36,7 +36,6 @@ END_MESSAGE_MAP()
 CCalcPathsView::CCalcPathsView() noexcept
 {
 
-
 }
 
 CCalcPathsView::~CCalcPathsView()
@@ -62,8 +61,9 @@ void CCalcPathsView::OnDraw(CDC* pDC)
 
 	m_drawer = std::make_unique<CGDIDrawer>(pDC);
 
-	if (pDoc->m_resultPath != nullptr)
-		for (auto& figure : *pDoc->m_resultPath)
+	for (const auto& path: m_resultPath)
+	if (path.lock() != nullptr)
+		for (auto& figure : path.lock()->m_path)
 			figure->Draw(m_drawer);
 }
 
@@ -140,12 +140,12 @@ void CCalcPathsView::onBuildPath(UINT msg)
 		break;
 	}
 
-	pDoc->m_resultPath = task->Run(pDoc->m_vecOfPaths);
-
-	if (pDoc->m_resultPath == nullptr)
+	m_resultPath = task->Run(pDoc->m_vecOfPaths);
+	
+	//if (m_resultPath.lock() == nullptr)
 	{
-		AfxMessageBox(_T("Не удалось построить путь"));
-		return;
+		//AfxMessageBox(_T("Не удалось построить путь"));
+		//return;
 	}
 
 	CClientDC aDc(this);

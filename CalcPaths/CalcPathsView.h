@@ -20,6 +20,7 @@ public:
 
 private:
 	std::unique_ptr<IDrawer> m_drawer;
+	std::list<std::weak_ptr<Path>> m_resultPath;
 
 // Операции
 public:

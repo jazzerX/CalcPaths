@@ -8,7 +8,7 @@
 #include "Arc.h"
 
 #include "BuildPaths.h"
-
+#include "MainFrm.h"
 
 
 class CCalcPathsDoc : public CDocument
@@ -21,8 +21,7 @@ private:
 
 // Атрибуты
 public:
-	std::shared_ptr<Path> m_resultPath;
-	std::list<Path> m_vecOfPaths;
+	std::list<std::shared_ptr<Path>> m_vecOfPaths;
 
 
 // Переопределение

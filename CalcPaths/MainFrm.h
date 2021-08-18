@@ -13,6 +13,13 @@ protected: // создать только из сериализации
 
 // Атрибуты
 public:
+	int m_nWidth;
+	int m_nHeight;
+
+	int m_nPosX;
+	int m_nPosY;
+
+	LPCTSTR m_lpszWndName;
 
 // Операции
 public:
@@ -32,6 +39,7 @@ public:
 
 protected:  // встроенные члены панели элементов управления
 	CStatusBar        m_wndStatusBar;
+	CMFCToolBar       m_wndToolBar;
 
 // Созданные функции схемы сообщений
 protected:

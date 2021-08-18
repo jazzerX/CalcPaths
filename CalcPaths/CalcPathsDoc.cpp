@@ -35,8 +35,9 @@ END_MESSAGE_MAP()
 
 CCalcPathsDoc::CCalcPathsDoc() noexcept
 {
-	// TODO: добавьте код для одноразового вызова конструктора
+	
 }
+
 
 CCalcPathsDoc::~CCalcPathsDoc()
 {
@@ -97,8 +98,25 @@ void CCalcPathsDoc::OnFileOpen()
 		{
 			if (std::strcmp(obj->Value(), "Windowsize") == 0)
 			{
+				/*Меняем размер окна*/
+
 				tinyxml2::XMLElement* figureList = obj->FirstChildElement("FinishPoint");
-				continue;
+				int nWidth;
+				int nHeight;
+
+				nWidth = figureList->FirstChildElement("x")->IntText();
+				nHeight = figureList->FirstChildElement("y")->IntText();
+
+				CRect size;
+				size.right = nWidth;
+				size.bottom = nHeight;
+
+				HWND h = FindWindow(nullptr, _T("Расчет путей"));
+
+				int nPosX = ::GetSystemMetrics(SM_CXSCREEN) / 2 - nWidth / 2;
+				int nPosY = ::GetSystemMetrics(SM_CYSCREEN) / 2 - nHeight / 2;
+
+				::SetWindowPos(h, HWND_TOPMOST, nPosX, nPosY, size.right, size.bottom, SWP_NOZORDER);
 			}
 			else
 			{
@@ -115,13 +133,13 @@ void CCalcPathsDoc::OnFileOpen()
 							sp = CLineSegment::GetPoint(pointList->FirstChildElement("StartPoint"));
 							fp = CLineSegment::GetPoint(pointList->FirstChildElement("FinishPoint"));
 
-							objList.emplace_back(std::move(std::make_unique<CLineSegment>(sp, fp, Type::LineSegment)));
+							objList.m_path.emplace_back(std::move(std::make_unique<CLineSegment>(sp, fp, Type::LineSegment)));
 						}
 						catch (LPCTSTR exception)
 						{
 							AfxMessageBox(exception);
 							m_vecOfPaths.clear();
-							objList.clear();
+							objList.m_path.clear();
 							return;
 						}
 					}
@@ -136,20 +154,20 @@ void CCalcPathsDoc::OnFileOpen()
 							mp = CArc::GetPoint(pointList->FirstChildElement("CenterPoint"));
 							fp = CArc::GetPoint(pointList->FirstChildElement("FinishPoint"));
 
-							objList.emplace_back(std::move(std::make_unique<CArc>(sp, mp, fp, Type::Arc)));
+							objList.m_path.emplace_back(std::move(std::make_unique<CArc>(sp, mp, fp, Type::Arc)));
 						}
 						catch (LPCTSTR exception)
 						{
 							AfxMessageBox(exception);
 							m_vecOfPaths.clear();
-							objList.clear();
+							objList.m_path.clear();
 							return;
 						}
 					}
 				}
+				m_vecOfPaths.emplace_back(std::make_shared<Path>(std::move(objList)));
+				objList.m_path.clear();
 			}
-			m_vecOfPaths.emplace_back(std::move(objList));
-			objList.clear();
 		}	
 	}
 	else

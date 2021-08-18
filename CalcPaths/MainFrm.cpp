@@ -32,7 +32,13 @@ static UINT indicators[] =
 
 CMainFrame::CMainFrame() noexcept
 {
-	// TODO: добавьте код инициализации члена
+	m_nWidth = 900;
+	m_nHeight = 550;
+
+	m_nPosX = ::GetSystemMetrics(SM_CXSCREEN) / 2 - m_nWidth / 2;
+	m_nPosY = ::GetSystemMetrics(SM_CYSCREEN) / 2 - m_nHeight / 2;
+
+	m_lpszWndName = _T("Расчет путей");
 }
 
 CMainFrame::~CMainFrame()
@@ -50,7 +56,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("Не удалось создать строку состояния\n");
 		return -1;      // не удалось создать
 	}
-	m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT));
 
 	return 0;
 }
@@ -60,14 +65,14 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	if( !CFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
 
-	cs.cx = 1000;
-	cs.cy = 500;
+	cs.cx = m_nWidth;
+	cs.cy = m_nHeight;
 
-	cs.x = ::GetSystemMetrics(SM_CXSCREEN) / 2 - cs.cx / 2;
-	cs.y = ::GetSystemMetrics(SM_CYSCREEN) / 2 - cs.cy / 2;
+	cs.x = m_nPosX;
+	cs.y = m_nPosY;
 
 	cs.style = WS_OVERLAPPED | WS_SYSMENU | WS_BORDER;
-	cs.lpszName = _T("Расчет путей");
+	cs.lpszName = m_lpszWndName;
 
 	return TRUE;
 }

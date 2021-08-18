@@ -38,13 +38,21 @@ int CLineSegment::GetValue(tinyxml2::XMLElement* value)
 
 Point CLineSegment::GetPoint(tinyxml2::XMLElement* point)
 {
-	tinyxml2::XMLElement* pointList = point->ToElement();
-	Point res;
+	if (point != nullptr)
+	{
+		tinyxml2::XMLElement* pointList = point->ToElement();
 
-	res.m_nx = GetValue(pointList->FirstChildElement("x"));
-	res.m_ny = GetValue(pointList->FirstChildElement("y"));
+		Point res;
 
-	return res;
+		res.m_nx = GetValue(pointList->FirstChildElement("x"));
+		res.m_ny = GetValue(pointList->FirstChildElement("y"));
+
+		return res;
+	}
+	else
+	{
+		throw _T("Документ не валидный");
+	}
 }
 
 

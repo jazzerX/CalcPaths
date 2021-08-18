@@ -3,7 +3,10 @@
 #include "Figures.h"
 #include <list>
 
-using Path = std::list<std::shared_ptr<IFigure>>;
+struct Path
+{
+	std::list<std::unique_ptr<IFigure>> m_path;
+};
 
 // Реализация паттерна проектирования "Стратегия"
 
@@ -11,28 +14,28 @@ using Path = std::list<std::shared_ptr<IFigure>>;
 class IBuildPath
 {
 public:
-	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) = 0;
+	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) = 0;
 };
 
 // Классы, реализующие построение путей
 class CShortestPath : public IBuildPath
 {
-	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) override;
+	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) override;
 };
 
 class CLongestPath : public IBuildPath
 {
-	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) override;
+	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) override;
 };
 
 class COnlyLines : public IBuildPath
 {
-	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) override;
+	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) override;
 };
 
 class COnlyArcs : public IBuildPath
 {
-	virtual std::shared_ptr<Path> MakePath(std::list<Path>&) override;
+	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) override;
 };
 
 // Класс, отвечающий за переключение и запуск стратегии
@@ -45,5 +48,5 @@ public:
 	CTask(std::unique_ptr<IBuildPath> path);
 
 	void SetStrategy(std::unique_ptr<IBuildPath> path);
-	std::shared_ptr<Path> Run(std::list<Path>&);
+	std::list<std::weak_ptr<Path>> Run(std::list<std::shared_ptr<Path>>&);
 };
