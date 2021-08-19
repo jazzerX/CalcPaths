@@ -20,7 +20,7 @@ public:
 
 private:
 	std::unique_ptr<IDrawer> m_drawer;
-	std::list<std::weak_ptr<Path>> m_resultPath;
+	std::list<PathPtr> m_resultPath;
 
 // Операции
 public:
@@ -35,7 +35,8 @@ protected:
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
 	afx_msg void onBuildPath(UINT msg);
-	afx_msg void onClearDoc();
+
+	void onClearDoc();
 
 // Реализация
 public:
@@ -50,8 +51,7 @@ protected:
 // Созданные функции схемы сообщений
 protected:
 	DECLARE_MESSAGE_MAP()
-public:
-	afx_msg void OnGdiDrawer();
+
 };
 
 #ifndef _DEBUG  // версия отладки в CalcPathsView.cpp

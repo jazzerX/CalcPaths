@@ -3,10 +3,14 @@
 #include "Figures.h"
 #include <list>
 
+using FigurePtr = std::unique_ptr<IFigure>;
+
 struct Path
 {
-	std::list<std::unique_ptr<IFigure>> m_path;
+	std::list<FigurePtr> m_path;
 };
+
+using PathPtr = std::weak_ptr<Path>;
 
 // Реализация паттерна проектирования "Стратегия"
 
@@ -14,39 +18,44 @@ struct Path
 class IBuildPath
 {
 public:
-	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) = 0;
+	virtual std::list<PathPtr> MakePath(std::list<std::shared_ptr<Path>>&) = 0;
 };
 
 // Классы, реализующие построение путей
-class CShortestPath : public IBuildPath
+class ShortestPath : public IBuildPath
 {
-	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) override;
+	virtual std::list<PathPtr> MakePath(std::list<std::shared_ptr<Path>>&) override;
 };
 
-class CLongestPath : public IBuildPath
+class LongestPath : public IBuildPath
 {
-	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) override;
+	virtual std::list<PathPtr> MakePath(std::list<std::shared_ptr<Path>>&) override;
 };
 
-class COnlyLines : public IBuildPath
+class OnlyLines : public IBuildPath
 {
-	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) override;
+	virtual std::list<PathPtr> MakePath(std::list<std::shared_ptr<Path>>&) override;
 };
 
-class COnlyArcs : public IBuildPath
+class OnlyArcs : public IBuildPath
 {
-	virtual std::list<std::weak_ptr<Path>> MakePath(std::list<std::shared_ptr<Path>>&) override;
+	virtual std::list<PathPtr> MakePath(std::list<std::shared_ptr<Path>>&) override;
+};
+
+class AllPaths : public IBuildPath
+{
+	virtual std::list<PathPtr> MakePath(std::list<std::shared_ptr<Path>>&) override;
 };
 
 // Класс, отвечающий за переключение и запуск стратегии
-class CTask 
+class Task 
 {
 private:
 	std::unique_ptr<IBuildPath> m_buildPath;
 
 public:
-	CTask(std::unique_ptr<IBuildPath> path);
+	Task(std::unique_ptr<IBuildPath> path);
 
 	void SetStrategy(std::unique_ptr<IBuildPath> path);
-	std::list<std::weak_ptr<Path>> Run(std::list<std::shared_ptr<Path>>&);
+	std::list<PathPtr> Run(std::list<std::shared_ptr<Path>>&);
 };

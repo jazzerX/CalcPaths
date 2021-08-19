@@ -17,8 +17,6 @@ protected: // создать только из сериализации
 	CCalcPathsDoc() noexcept;
 	DECLARE_DYNCREATE(CCalcPathsDoc)
 
-private:
-
 // Атрибуты
 public:
 	std::list<std::shared_ptr<Path>> m_listOfPaths;
@@ -29,8 +27,10 @@ public:
 	virtual BOOL OnNewDocument();
 	virtual void Serialize(CArchive& ar);
 
-public:
 	afx_msg void OnFileOpen();
+
+private:
+	int ParseToXML(Path& objList, tinyxml2::XMLElement* figure, Type type);
 
 #ifdef SHARED_HANDLERS
 	virtual void InitializeSearchContent();

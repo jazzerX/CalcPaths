@@ -69,7 +69,36 @@ void CCalcPathsDoc::Serialize(CArchive& ar)
 	}
 }
 
-// Возвращает значение для х или у. Иначе бросает исключение
+int CCalcPathsDoc::ParseToXML(Path& objList, tinyxml2::XMLElement* figure, Type type)
+{
+	try
+	{
+		switch (type)
+		{
+		case Type::LineSegment:
+		{
+			std::unique_ptr<CLineSegment> line = std::make_unique<CLineSegment>(CLineSegment::GetLine(figure));
+			objList.m_path.emplace_back(std::move(line));
+		}
+		break;
+
+		case Type::Arc:
+		{
+			std::unique_ptr<CArc> arc = std::make_unique<CArc>(CArc::GetLine(figure));
+			objList.m_path.emplace_back(std::move(arc));
+		}
+		}
+
+		return 0;
+	}
+	catch (LPCTSTR exception)
+	{
+		AfxMessageBox(exception);
+		m_listOfPaths.clear();
+		objList.m_path.clear();
+		return -1;
+	}
+}
 
 void CCalcPathsDoc::OnFileOpen()
 {
@@ -100,14 +129,13 @@ void CCalcPathsDoc::OnFileOpen()
 		{
 			if (std::strcmp(obj->Value(), "Windowsize") == 0)
 			{
-				/*Меняем размер окна*/
-
+				// Считываем координаты из файла
 				tinyxml2::XMLElement* figureList = obj->FirstChildElement("FinishPoint");
-				int nWidth;
-				int nHeight;
-
 				tinyxml2::XMLElement* xVal = figureList->FirstChildElement("x");
 				tinyxml2::XMLElement* yVal = figureList->FirstChildElement("y");
+
+				int nWidth;
+				int nHeight;
 
 				if (xVal != nullptr && yVal != nullptr)
 				{
@@ -120,25 +148,31 @@ void CCalcPathsDoc::OnFileOpen()
 					return;
 				}
 
+				// Определяем размер документа
 				POSITION pos = GetFirstViewPosition();
 				CRect crDocSize;
 				GetNextView(pos)->GetClientRect(crDocSize);				
 
+				// Находим главное окно
 				HWND wnd = FindWindow(nullptr, _T("Расчет путей"));
 
+				// Получаем размер окна
 				CRect crWndSize;
 				GetWindowRect(wnd, crWndSize);
 
 				int widthWnd = crWndSize.right - crWndSize.left;
 				int heightWnd = crWndSize.bottom - crWndSize.top;
 
+				// Считаем новый размер окна
 				CRect crSize;
 				crSize.right = (widthWnd - crDocSize.right) + nWidth;
 				crSize.bottom = (heightWnd - crDocSize.bottom) + nHeight;
 
-				int nPosX = ::GetSystemMetrics(SM_CXSCREEN) / 2 - nWidth / 2;
-				int nPosY = ::GetSystemMetrics(SM_CYSCREEN) / 2 - nHeight / 2;
+				// Размещаем окно по центру экрана
+				int nPosX = ::GetSystemMetrics(SM_CXSCREEN) / 2 - crSize.right / 2;
+				int nPosY = ::GetSystemMetrics(SM_CYSCREEN) / 2 - crSize.bottom / 2;
 
+				// Меняем размер окна
 				::SetWindowPos(wnd, HWND_TOPMOST, nPosX, nPosY, crSize.right, crSize.bottom, SWP_NOZORDER);
 			}
 			else
@@ -148,47 +182,12 @@ void CCalcPathsDoc::OnFileOpen()
 				for (tinyxml2::XMLElement* figure = figureList->FirstChildElement(); figure != nullptr; figure = figure->NextSiblingElement())
 				{
 					if (std::strcmp(figure->Value(), "LineSegment") == 0)
-					{
-						try
-						{
-							Point sp, fp;
-							tinyxml2::XMLElement* pointList = figure->ToElement();
-
-							sp = CLineSegment::GetPoint(pointList->FirstChildElement("StartPoint"));
-							fp = CLineSegment::GetPoint(pointList->FirstChildElement("FinishPoint"));
-
-							objList.m_path.emplace_back(std::move(std::make_unique<CLineSegment>(sp, fp, Type::LineSegment)));
-						}
-						catch (LPCTSTR exception)
-						{
-							AfxMessageBox(exception);
-							m_listOfPaths.clear();
-							objList.m_path.clear();
+						if (ParseToXML(objList, figure, Type::LineSegment) == -1)
 							return;
-						}
-					}
 
 					if (std::strcmp(figure->Value(), "Arc") == 0)
-					{
-						try
-						{
-							Point sp, mp, fp;
-							tinyxml2::XMLElement* pointList = figure->ToElement();
-
-							sp = CArc::GetPoint(pointList->FirstChildElement("StartPoint"));
-							mp = CArc::GetPoint(pointList->FirstChildElement("CenterPoint"));
-							fp = CArc::GetPoint(pointList->FirstChildElement("FinishPoint"));
-
-							objList.m_path.emplace_back(std::move(std::make_unique<CArc>(sp, mp, fp, Type::Arc)));
-						}
-						catch (LPCTSTR exception)
-						{
-							AfxMessageBox(exception);
-							m_listOfPaths.clear();
-							objList.m_path.clear();
+						if (ParseToXML(objList, figure, Type::Arc) == -1)
 							return;
-						}
-					}
 				}
 
 				m_listOfPaths.emplace_back(std::make_shared<Path>(std::move(objList)));
@@ -202,6 +201,8 @@ void CCalcPathsDoc::OnFileOpen()
 		return;
 	}
 }
+
+
 
 #ifdef SHARED_HANDLERS
 

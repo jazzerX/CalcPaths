@@ -77,3 +77,22 @@ void CArc::Draw(std::unique_ptr<IDrawer>& drawer) const
 {
 	drawer->DrawArc(m_startPoint, m_middlePoint, m_finishPoint);
 }
+
+CArc CArc::GetLine(tinyxml2::XMLElement* figure)
+{
+	if (figure != nullptr)
+	{
+		Point sp, mp, fp;
+		tinyxml2::XMLElement* pointList = figure->ToElement();
+
+		sp = CArc::GetPoint(pointList->FirstChildElement("StartPoint"));
+		mp = CArc::GetPoint(pointList->FirstChildElement("CenterPoint"));
+		fp = CArc::GetPoint(pointList->FirstChildElement("FinishPoint"));
+
+		return CArc(sp, mp, fp, Type::Arc);
+	}
+	else
+	{
+		throw _T("Документ не валидный");
+	}
+}

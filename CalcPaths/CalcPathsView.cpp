@@ -29,16 +29,14 @@ BEGIN_MESSAGE_MAP(CCalcPathsView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 
-	ON_COMMAND_RANGE(ID_SHORTEST_PATH, ID_ONLY_ARCS, &CCalcPathsView::onBuildPath)
-	ON_COMMAND(ID_CLEAR_DOCUMENT, &CCalcPathsView::onClearDoc)
-	ON_COMMAND(ID_GDI_DRAWER, &CCalcPathsView::OnGdiDrawer)
+	ON_COMMAND_RANGE(ID_SHORTEST_PATH, ID_ALL_PATHS, &CCalcPathsView::onBuildPath)
+
 END_MESSAGE_MAP()
 
 // Создание или уничтожение CCalcPathsView
 
 CCalcPathsView::CCalcPathsView() noexcept
 {
-
 }
 
 CCalcPathsView::~CCalcPathsView()
@@ -122,22 +120,28 @@ void CCalcPathsView::onBuildPath(UINT msg)
 		return;
 	}
 
-	std::unique_ptr<CTask> task;
+	std::unique_ptr<Task> task;
 
 	switch (msg)
 	{
 	case ID_SHORTEST_PATH:
-		task = std::make_unique<CTask>(std::make_unique<CShortestPath>());
+		task = std::make_unique<Task>(std::make_unique<ShortestPath>());
 		break;
 	case ID_LONGEST_PATH:
-		task = std::make_unique<CTask>(std::make_unique<CLongestPath>());
+		task = std::make_unique<Task>(std::make_unique<LongestPath>());
 		break;
 	case ID_ONLY_LINES:
-		task = std::make_unique<CTask>(std::make_unique<COnlyLines>());
+		task = std::make_unique<Task>(std::make_unique<OnlyLines>());
 		break;
 	case ID_ONLY_ARCS:
-		task = std::make_unique<CTask>(std::make_unique<COnlyArcs>());
+		task = std::make_unique<Task>(std::make_unique<OnlyArcs>());
 		break;
+	case ID_ALL_PATHS:
+		task = std::make_unique<Task>(std::make_unique<AllPaths>());
+		break;	
+	case ID_CLEAR_DOCUMENT:
+		onClearDoc();
+		return;
 	}
 
 	onClearDoc();
@@ -160,7 +164,3 @@ void CCalcPathsView::onClearDoc()
 	CWnd::UpdateWindow();
 }
 
-void CCalcPathsView::OnGdiDrawer()
-{
-
-}

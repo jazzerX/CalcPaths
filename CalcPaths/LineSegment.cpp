@@ -55,6 +55,24 @@ Point CLineSegment::GetPoint(tinyxml2::XMLElement* point)
 	}
 }
 
+CLineSegment CLineSegment::GetLine(tinyxml2::XMLElement* figure)
+{
+	if (figure != nullptr)
+	{
+		Point sp, fp;
+		tinyxml2::XMLElement* pointList = figure->ToElement();
+
+		sp = GetPoint(pointList->FirstChildElement("StartPoint"));
+		fp = GetPoint(pointList->FirstChildElement("FinishPoint"));
+
+		return CLineSegment(sp, fp, Type::LineSegment);
+	}
+	else
+	{
+		throw _T("Документ не валидный");
+	}
+}
+
 
 void CLineSegment::Draw(std::unique_ptr<IDrawer>& drawer) const
 {

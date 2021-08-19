@@ -4,12 +4,14 @@
 #include <cfloat>
 
 
-std::list<std::weak_ptr<Path>> CShortestPath::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
+
+
+std::list<PathPtr> ShortestPath::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
 {
 	double dblMinLength = DBL_MAX;
 	double dblCurrLength;
 
-	std::list<std::weak_ptr<Path>> res;
+	std::list<PathPtr> res;
 	std::weak_ptr<Path> minPath;
 
 	for (auto& objs : listPaths)
@@ -18,10 +20,10 @@ std::list<std::weak_ptr<Path>> CShortestPath::MakePath(std::list<std::shared_ptr
 		for (const auto& path : objs->m_path)
 			dblCurrLength += path->GetLength();
 
-		if (dblCurrLength < dblMinLength)
+		if (dblCurrLength <= dblMinLength)
 		{
 			dblMinLength = dblCurrLength;
-			minPath = objs;
+			res.emplace_back(objs);
 		}
 	}
 
@@ -30,12 +32,12 @@ std::list<std::weak_ptr<Path>> CShortestPath::MakePath(std::list<std::shared_ptr
 	return res;
 }
 
-std::list<std::weak_ptr<Path>> CLongestPath::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
+std::list<PathPtr> LongestPath::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
 {
 	double dblMaxLength = DBL_MIN;
 	double dblCurrLength;
 
-	std::list<std::weak_ptr<Path>> res;
+	std::list<PathPtr> res;
 	std::weak_ptr<Path> maxPath;
 
 	for (auto& objs : listPaths)
@@ -56,9 +58,9 @@ std::list<std::weak_ptr<Path>> CLongestPath::MakePath(std::list<std::shared_ptr<
 	return res;
 }
 
-std::list<std::weak_ptr<Path>> COnlyLines::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
+std::list<PathPtr> OnlyLines::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
 {
-	std::list<std::weak_ptr<Path>> res;
+	std::list<PathPtr> res;
 
 	for (auto& objs : listPaths)
 	{
@@ -77,9 +79,9 @@ std::list<std::weak_ptr<Path>> COnlyLines::MakePath(std::list<std::shared_ptr<Pa
 	return res;
 }
 
-std::list<std::weak_ptr<Path>> COnlyArcs::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
+std::list<PathPtr> OnlyArcs::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
 {
-	std::list<std::weak_ptr<Path>> res;
+	std::list<PathPtr> res;
 	
 	for (auto& objs : listPaths)
 	{
@@ -98,18 +100,31 @@ std::list<std::weak_ptr<Path>> COnlyArcs::MakePath(std::list<std::shared_ptr<Pat
 	return res;
 }
 
-CTask::CTask(std::unique_ptr<IBuildPath> path)
+
+std::list<PathPtr> AllPaths::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
+{
+
+	std::list<PathPtr> res;
+	for (auto& objs : listPaths)
+		res.emplace_back(objs);
+
+	return res;
+}
+
+
+Task::Task(std::unique_ptr<IBuildPath> path)
 {
 	m_buildPath = std::move(path);
 }
 
-void CTask::SetStrategy(std::unique_ptr<IBuildPath> path)
+void Task::SetStrategy(std::unique_ptr<IBuildPath> path)
 {
 	m_buildPath.~unique_ptr();
 	m_buildPath = std::move(path);
 }
 
-std::list<std::weak_ptr<Path>> CTask::Run(std::list<std::shared_ptr<Path>>& listPaths)
+std::list<PathPtr> Task::Run(std::list<std::shared_ptr<Path>>& listPaths)
 {
 	return m_buildPath->MakePath(listPaths);
 }
+

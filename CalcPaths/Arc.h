@@ -20,9 +20,11 @@ public:
 	virtual double GetLength() const override;
 	virtual void Draw(std::unique_ptr<IDrawer>& drawer) const override;
 
-	static Point GetPoint(tinyxml2::XMLElement* point);
-	static int GetValue(tinyxml2::XMLElement* value);
+	static CArc GetLine(tinyxml2::XMLElement* figure);
 
 private:
 	double CalcLength();
+
+	static Point GetPoint(tinyxml2::XMLElement* point);
+	static int GetValue(tinyxml2::XMLElement* value);
 };
