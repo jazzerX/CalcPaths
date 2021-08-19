@@ -6,21 +6,21 @@
 
 std::list<std::weak_ptr<Path>> CShortestPath::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
 {
-	double nMinLength = DBL_MAX;
-	double nCurrLength;
+	double dblMinLength = DBL_MAX;
+	double dblCurrLength;
 
 	std::list<std::weak_ptr<Path>> res;
 	std::weak_ptr<Path> minPath;
 
 	for (auto& objs : listPaths)
 	{
-		nCurrLength = 0;
+		dblCurrLength = 0;
 		for (const auto& path : objs->m_path)
-			nCurrLength += path->GetLength();
+			dblCurrLength += path->GetLength();
 
-		if (nCurrLength < nMinLength)
+		if (dblCurrLength < dblMinLength)
 		{
-			nMinLength = nCurrLength;
+			dblMinLength = dblCurrLength;
 			minPath = objs;
 		}
 	}
@@ -32,21 +32,21 @@ std::list<std::weak_ptr<Path>> CShortestPath::MakePath(std::list<std::shared_ptr
 
 std::list<std::weak_ptr<Path>> CLongestPath::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
 {
-	double nMaxLength = DBL_MIN;
-	double nCurrLength;
+	double dblMaxLength = DBL_MIN;
+	double dblCurrLength;
 
 	std::list<std::weak_ptr<Path>> res;
 	std::weak_ptr<Path> maxPath;
 
 	for (auto& objs : listPaths)
 	{
-		nCurrLength = 0;
+		dblCurrLength = 0;
 		for (auto& path : objs->m_path)
-			nCurrLength += path->GetLength();
+			dblCurrLength += path->GetLength();
 
-		if (nCurrLength > nMaxLength)
+		if (dblCurrLength > dblMaxLength)
 		{
-			nMaxLength = nCurrLength;
+			dblMaxLength = dblCurrLength;
 			maxPath = objs;
 		}
 	}

@@ -57,7 +57,7 @@
     <ClInclude Include="Drawer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="gdidrawer.h">
+    <ClInclude Include="GDIDrawer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
@@ -89,10 +89,7 @@
     <ClCompile Include="Arc.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Figures.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="gdidrawer.cpp">
+    <ClCompile Include="GDIDrawer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Point.h">
@@ -114,6 +111,9 @@
       <Filter>Файлы ресурсов</Filter>
     </Image>
     <Image Include="res\CalcPaths.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="res\toolbar1.bmp">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>

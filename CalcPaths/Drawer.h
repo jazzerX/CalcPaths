@@ -5,6 +5,6 @@
 class IDrawer
 {
 public:
-	virtual void DrawLine(Point sp, Point fp) = 0;
-	virtual void DrawArc(Point sp, Point mp, Point fp) = 0;
+	virtual void DrawLine(Point sp, Point fp) const = 0;
+	virtual void DrawArc(Point sp, Point mp, Point fp) const = 0;
 };

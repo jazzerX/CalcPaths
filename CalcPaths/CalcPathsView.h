@@ -35,6 +35,7 @@ protected:
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
 	afx_msg void onBuildPath(UINT msg);
+	afx_msg void onClearDoc();
 
 // Реализация
 public:

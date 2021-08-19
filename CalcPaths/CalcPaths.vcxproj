@@ -196,7 +196,7 @@
     <ClInclude Include="Drawer.h" />
     <ClInclude Include="Figures.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="gdidrawer.h" />
+    <ClInclude Include="GDIDrawer.h" />
     <ClInclude Include="LineSegment.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
@@ -210,8 +210,7 @@
     <ClCompile Include="CalcPaths.cpp" />
     <ClCompile Include="CalcPathsDoc.cpp" />
     <ClCompile Include="CalcPathsView.cpp" />
-    <ClCompile Include="Figures.cpp" />
-    <ClCompile Include="gdidrawer.cpp" />
+    <ClCompile Include="GDIDrawer.cpp" />
     <ClCompile Include="LineSegment.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="pch.cpp">
@@ -232,6 +231,7 @@
   <ItemGroup>
     <Image Include="res\CalcPaths.ico" />
     <Image Include="res\CalcPathsDoc.ico" />
+    <Image Include="res\toolbar1.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

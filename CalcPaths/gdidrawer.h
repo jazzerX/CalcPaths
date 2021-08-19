@@ -8,6 +8,6 @@ private:
 public:
 	CGDIDrawer(CDC* dc);
 
-	virtual void DrawLine(Point sp, Point fp) override;
-	virtual void DrawArc(Point sp, Point mp, Point fp) override;
+	virtual void DrawLine(Point sp, Point fp) const override;
+	virtual void DrawArc(Point sp, Point mp, Point fp) const override;
 };

@@ -73,28 +73,30 @@ void CCalcPathsDoc::Serialize(CArchive& ar)
 
 void CCalcPathsDoc::OnFileOpen()
 {
-	Path objList;
 	CString csPathName;
-	CFileDialog dlgFile(true, _T("xml"), NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_EXPLORER, _T("XML files (*.xml)|*.xml||"));
 
+	CFileDialog dlgFile(true, _T("xml"), NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_EXPLORER, _T("XML files (*.xml)|*.xml||"));
 	if (dlgFile.DoModal() == IDOK)
 	{
-		m_vecOfPaths.clear();
+		m_listOfPaths.clear();
 		csPathName = dlgFile.GetPathName();
 	}
 	else 
 		return;
 
-	CStringA filePath(csPathName);
+	CStringA csaFilePath(csPathName);
 
-	tinyxml2::XMLDocument doc;
-	doc.LoadFile(filePath);
+	tinyxml2::XMLDocument xmlDoc;
+	xmlDoc.LoadFile(csaFilePath);
 
-	if (doc.ErrorID() != tinyxml2::XML_ERROR_FILE_NOT_FOUND && doc.ErrorID() != tinyxml2::XML_ERROR_MISMATCHED_ELEMENT)
+	if (xmlDoc.ErrorID() != tinyxml2::XML_ERROR_FILE_NOT_FOUND && xmlDoc.ErrorID() != tinyxml2::XML_ERROR_MISMATCHED_ELEMENT)
 	{
-		tinyxml2::XMLElement* rootElement = doc.RootElement();
-		tinyxml2::XMLElement* w = rootElement->ToElement();
-		for (tinyxml2::XMLElement* obj = w->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
+		Path objList;
+
+		tinyxml2::XMLElement* rootElement = xmlDoc.RootElement();
+		tinyxml2::XMLElement* objects = rootElement->ToElement();
+
+		for (tinyxml2::XMLElement* obj = objects->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
 		{
 			if (std::strcmp(obj->Value(), "Windowsize") == 0)
 			{
@@ -104,19 +106,40 @@ void CCalcPathsDoc::OnFileOpen()
 				int nWidth;
 				int nHeight;
 
-				nWidth = figureList->FirstChildElement("x")->IntText();
-				nHeight = figureList->FirstChildElement("y")->IntText();
+				tinyxml2::XMLElement* xVal = figureList->FirstChildElement("x");
+				tinyxml2::XMLElement* yVal = figureList->FirstChildElement("y");
 
-				CRect size;
-				size.right = nWidth;
-				size.bottom = nHeight;
+				if (xVal != nullptr && yVal != nullptr)
+				{
+					nWidth = xVal->IntText();
+					nHeight = yVal->IntText();
+				}
+				else
+				{
+					AfxMessageBox(_T("Документ не валидный"));
+					return;
+				}
 
-				HWND h = FindWindow(nullptr, _T("Расчет путей"));
+				POSITION pos = GetFirstViewPosition();
+				CRect crDocSize;
+				GetNextView(pos)->GetClientRect(crDocSize);				
+
+				HWND wnd = FindWindow(nullptr, _T("Расчет путей"));
+
+				CRect crWndSize;
+				GetWindowRect(wnd, crWndSize);
+
+				int widthWnd = crWndSize.right - crWndSize.left;
+				int heightWnd = crWndSize.bottom - crWndSize.top;
+
+				CRect crSize;
+				crSize.right = (widthWnd - crDocSize.right) + nWidth;
+				crSize.bottom = (heightWnd - crDocSize.bottom) + nHeight;
 
 				int nPosX = ::GetSystemMetrics(SM_CXSCREEN) / 2 - nWidth / 2;
 				int nPosY = ::GetSystemMetrics(SM_CYSCREEN) / 2 - nHeight / 2;
 
-				::SetWindowPos(h, HWND_TOPMOST, nPosX, nPosY, size.right, size.bottom, SWP_NOZORDER);
+				::SetWindowPos(wnd, HWND_TOPMOST, nPosX, nPosY, crSize.right, crSize.bottom, SWP_NOZORDER);
 			}
 			else
 			{
@@ -126,10 +149,11 @@ void CCalcPathsDoc::OnFileOpen()
 				{
 					if (std::strcmp(figure->Value(), "LineSegment") == 0)
 					{
-						Point sp, fp;
-						tinyxml2::XMLElement* pointList = figure->ToElement();
 						try
-						{							
+						{
+							Point sp, fp;
+							tinyxml2::XMLElement* pointList = figure->ToElement();
+
 							sp = CLineSegment::GetPoint(pointList->FirstChildElement("StartPoint"));
 							fp = CLineSegment::GetPoint(pointList->FirstChildElement("FinishPoint"));
 
@@ -138,7 +162,7 @@ void CCalcPathsDoc::OnFileOpen()
 						catch (LPCTSTR exception)
 						{
 							AfxMessageBox(exception);
-							m_vecOfPaths.clear();
+							m_listOfPaths.clear();
 							objList.m_path.clear();
 							return;
 						}
@@ -146,10 +170,11 @@ void CCalcPathsDoc::OnFileOpen()
 
 					if (std::strcmp(figure->Value(), "Arc") == 0)
 					{
-						Point sp, mp, fp;
-						tinyxml2::XMLElement* pointList = figure->ToElement();
 						try
 						{
+							Point sp, mp, fp;
+							tinyxml2::XMLElement* pointList = figure->ToElement();
+
 							sp = CArc::GetPoint(pointList->FirstChildElement("StartPoint"));
 							mp = CArc::GetPoint(pointList->FirstChildElement("CenterPoint"));
 							fp = CArc::GetPoint(pointList->FirstChildElement("FinishPoint"));
@@ -159,13 +184,14 @@ void CCalcPathsDoc::OnFileOpen()
 						catch (LPCTSTR exception)
 						{
 							AfxMessageBox(exception);
-							m_vecOfPaths.clear();
+							m_listOfPaths.clear();
 							objList.m_path.clear();
 							return;
 						}
 					}
 				}
-				m_vecOfPaths.emplace_back(std::make_shared<Path>(std::move(objList)));
+
+				m_listOfPaths.emplace_back(std::make_shared<Path>(std::move(objList)));
 				objList.m_path.clear();
 			}
 		}	

@@ -27,7 +27,10 @@ BEGIN_MESSAGE_MAP(CCalcPathsView, CView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
+	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
+
 	ON_COMMAND_RANGE(ID_SHORTEST_PATH, ID_ONLY_ARCS, &CCalcPathsView::onBuildPath)
+	ON_COMMAND(ID_CLEAR_DOCUMENT, &CCalcPathsView::onClearDoc)
 	ON_COMMAND(ID_GDI_DRAWER, &CCalcPathsView::OnGdiDrawer)
 END_MESSAGE_MAP()
 
@@ -62,9 +65,9 @@ void CCalcPathsView::OnDraw(CDC* pDC)
 	m_drawer = std::make_unique<CGDIDrawer>(pDC);
 
 	for (const auto& path: m_resultPath)
-	if (path.lock() != nullptr)
-		for (auto& figure : path.lock()->m_path)
-			figure->Draw(m_drawer);
+		if (path.lock() != nullptr)
+			for (auto& figure : path.lock()->m_path)
+				figure->Draw(m_drawer);
 }
 
 // Печать CCalcPathsView
@@ -112,11 +115,8 @@ CCalcPathsDoc* CCalcPathsView::GetDocument() const // встроена неот�
 void CCalcPathsView::onBuildPath(UINT msg)
 {
 	CCalcPathsDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
-	if (!pDoc)
-		return;
 
-	if (pDoc->m_vecOfPaths.size() == 0)
+	if (pDoc->m_listOfPaths.size() == 0)
 	{
 		AfxMessageBox(_T("Не удалось выполнить команду"));
 		return;
@@ -140,16 +140,24 @@ void CCalcPathsView::onBuildPath(UINT msg)
 		break;
 	}
 
-	m_resultPath = task->Run(pDoc->m_vecOfPaths);
-	
-	//if (m_resultPath.lock() == nullptr)
+	onClearDoc();
+	m_resultPath = task->Run(pDoc->m_listOfPaths);
+
+	if (m_resultPath.empty())
 	{
-		//AfxMessageBox(_T("Не удалось построить путь"));
-		//return;
+		AfxMessageBox(_T("Не удалось построить путь"));
+		return;
 	}
 
 	CClientDC aDc(this);
 	OnDraw(&aDc);
+}
+
+void CCalcPathsView::onClearDoc()
+{
+	m_resultPath.clear();
+	CWnd::Invalidate(TRUE);
+	CWnd::UpdateWindow();
 }
 
 void CCalcPathsView::OnGdiDrawer()

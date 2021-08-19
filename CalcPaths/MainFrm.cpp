@@ -32,13 +32,7 @@ static UINT indicators[] =
 
 CMainFrame::CMainFrame() noexcept
 {
-	m_nWidth = 900;
-	m_nHeight = 550;
 
-	m_nPosX = ::GetSystemMetrics(SM_CXSCREEN) / 2 - m_nWidth / 2;
-	m_nPosY = ::GetSystemMetrics(SM_CYSCREEN) / 2 - m_nHeight / 2;
-
-	m_lpszWndName = _T("Расчет путей");
 }
 
 CMainFrame::~CMainFrame()
@@ -65,14 +59,14 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	if( !CFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
 
-	cs.cx = m_nWidth;
-	cs.cy = m_nHeight;
+	cs.cx = 1000;
+	cs.cy = 500;
 
-	cs.x = m_nPosX;
-	cs.y = m_nPosY;
+	cs.x = ::GetSystemMetrics(SM_CXSCREEN) / 2 - cs.cx / 2;
+	cs.y = ::GetSystemMetrics(SM_CYSCREEN) / 2 - cs.cy / 2;
 
 	cs.style = WS_OVERLAPPED | WS_SYSMENU | WS_BORDER;
-	cs.lpszName = m_lpszWndName;
+	cs.lpszName = _T("Расчет путей");
 
 	return TRUE;
 }

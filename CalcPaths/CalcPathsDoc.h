@@ -21,7 +21,7 @@ private:
 
 // Атрибуты
 public:
-	std::list<std::shared_ptr<Path>> m_vecOfPaths;
+	std::list<std::shared_ptr<Path>> m_listOfPaths;
 
 
 // Переопределение
