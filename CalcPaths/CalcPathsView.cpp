@@ -31,12 +31,14 @@ BEGIN_MESSAGE_MAP(CCalcPathsView, CView)
 
 	ON_COMMAND_RANGE(ID_SHORTEST_PATH, ID_ALL_PATHS, &CCalcPathsView::onBuildPath)
 
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 // Создание или уничтожение CCalcPathsView
 
 CCalcPathsView::CCalcPathsView() noexcept
 {
+
 }
 
 CCalcPathsView::~CCalcPathsView()
@@ -62,7 +64,7 @@ void CCalcPathsView::OnDraw(CDC* pDC)
 
 	m_drawer = std::make_unique<CGDIDrawer>(pDC);
 
-	for (const auto& path: m_resultPath)
+	for (const auto& path: pDoc->m_resultPath)
 		if (path.lock() != nullptr)
 			for (auto& figure : path.lock()->m_path)
 				figure->Draw(m_drawer);
@@ -140,14 +142,14 @@ void CCalcPathsView::onBuildPath(UINT msg)
 		task = std::make_unique<Task>(std::make_unique<AllPaths>());
 		break;	
 	case ID_CLEAR_DOCUMENT:
-		onClearDoc();
+		onClearDoc(pDoc);
 		return;
 	}
 
-	onClearDoc();
-	m_resultPath = task->Run(pDoc->m_listOfPaths);
+	onClearDoc(pDoc);
+	pDoc->m_resultPath = task->Run(pDoc->m_listOfPaths);
 
-	if (m_resultPath.empty())
+	if (pDoc->m_resultPath.empty())
 	{
 		AfxMessageBox(_T("Не удалось построить путь"));
 		return;
@@ -157,10 +159,36 @@ void CCalcPathsView::onBuildPath(UINT msg)
 	OnDraw(&aDc);
 }
 
-void CCalcPathsView::onClearDoc()
+void CCalcPathsView::onClearDoc(CCalcPathsDoc* pDoc)
 {
-	m_resultPath.clear();
+	pDoc->m_resultPath.clear();
 	CWnd::Invalidate(TRUE);
 	CWnd::UpdateWindow();
 }
 
+
+
+void CCalcPathsView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	Point pos;
+	pos.m_nx = point.x;
+	pos.m_ny = point.y;
+
+	CCalcPathsDoc* pDoc = GetDocument();
+
+	for (auto& path : pDoc->m_resultPath)
+	{
+		double q = path.lock()->CheckBelongs(pos);
+		if ( q > 0)
+		{
+			CString val;
+			val.Format(_T("%f"), q);
+			AfxMessageBox(val);
+			//CString s = L"Text";
+			//CStatusBar* p = (CStatusBar*)AfxGetApp()->m_pMainWnd->GetDescendantWindow(ID_VIEW_STATUS_BAR);
+			//p->SetPaneText(1, val);
+			return;
+		}
+	}
+
+}

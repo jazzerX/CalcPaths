@@ -3,14 +3,7 @@
 #include "Figures.h"
 #include <list>
 
-using FigurePtr = std::unique_ptr<IFigure>;
-
-struct Path
-{
-	std::list<FigurePtr> m_path;
-};
-
-using PathPtr = std::weak_ptr<Path>;
+#include "Path.h"
 
 // Реализация паттерна проектирования "Стратегия"
 

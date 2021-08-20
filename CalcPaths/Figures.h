@@ -16,6 +16,8 @@ public:
 	virtual Type GetType() const = 0;
 	virtual double GetLength() const = 0;
 	virtual void Draw(std::unique_ptr<IDrawer>& drawer) const = 0;
+
+	virtual bool BelongFigure(Point pos) = 0;
 };
 
 

@@ -19,6 +19,8 @@ public:
 	virtual double GetLength() const override;
 	virtual void  Draw(std::unique_ptr<IDrawer>& drawer) const override;
 
+	virtual bool BelongFigure(Point pos) override;
+
 	static CLineSegment GetLine(tinyxml2::XMLElement* figure);
 
 private:

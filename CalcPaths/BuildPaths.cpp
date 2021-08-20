@@ -4,8 +4,6 @@
 #include <cfloat>
 
 
-
-
 std::list<PathPtr> ShortestPath::MakePath(std::list<std::shared_ptr<Path>>& listPaths)
 {
 	double dblMinLength = DBL_MAX;

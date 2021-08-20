@@ -24,7 +24,7 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-protected:  // встроенные члены панели элементов управления
+public:  // встроенные члены панели элементов управления
 	CStatusBar        m_wndStatusBar;
 
 // Созданные функции схемы сообщений

@@ -19,6 +19,8 @@ public:
 	virtual Type GetType() const override;
 	virtual double GetLength() const override;
 	virtual void Draw(std::unique_ptr<IDrawer>& drawer) const override;
+	
+	virtual bool BelongFigure(Point pos) override;
 
 	static CArc GetLine(tinyxml2::XMLElement* figure);
 

@@ -14,16 +14,16 @@ CArc::CArc(Point startPoint, Point middlePoint, Point finishPoint, Type type)
 
 double CArc::CalcLength()
 {
-	double r = ::sqrt(::pow(m_middlePoint.m_nx - m_startPoint.m_nx, 2) + pow(m_middlePoint.m_ny - m_startPoint.m_ny, 2));
+	double r = sqrt(pow(m_middlePoint.m_nx - m_startPoint.m_nx, 2) + pow(m_middlePoint.m_ny - m_startPoint.m_ny, 2));
 
 	Point v1, v2;
-	v1.m_nx = m_middlePoint.m_nx - m_startPoint.m_nx;
-	v1.m_ny = m_middlePoint.m_ny - m_startPoint.m_ny;
+	v1.m_nx = m_startPoint.m_nx - m_middlePoint.m_nx;
+	v1.m_ny = m_startPoint.m_ny - m_middlePoint.m_ny;
 
-	v2.m_nx = m_middlePoint.m_nx - m_finishPoint.m_nx;
-	v2.m_ny = m_middlePoint.m_ny - m_finishPoint.m_ny;
+	v2.m_nx = m_finishPoint.m_nx - m_middlePoint.m_nx;
+	v2.m_ny = m_finishPoint.m_ny - m_middlePoint.m_ny;
 
-	double angle = ::acos((v1.m_nx * v2.m_nx - v1.m_ny * v2.m_ny) / (::sqrt(v1.m_nx * v1.m_nx + v1.m_ny * v1.m_ny) * ::sqrt(v2.m_nx * v2.m_nx + v2.m_ny * v2.m_ny)));
+	double angle = acos((v1.m_nx * v2.m_nx + v1.m_ny * v2.m_ny) / (sqrt(v1.m_nx * v1.m_nx + v1.m_ny * v1.m_ny) * sqrt(v2.m_nx * v2.m_nx + v2.m_ny * v2.m_ny)));
 	return r * angle;
 }
 
@@ -78,18 +78,36 @@ void CArc::Draw(std::unique_ptr<IDrawer>& drawer) const
 	drawer->DrawArc(m_startPoint, m_middlePoint, m_finishPoint);
 }
 
+bool CArc::BelongFigure(Point pos)
+{
+	double r = sqrt(pow(m_middlePoint.m_nx - pos.m_nx, 2) + pow(m_middlePoint.m_ny - pos.m_ny, 2));
+	double r1 = sqrt(pow(m_middlePoint.m_nx - m_startPoint.m_nx, 2) + pow(m_middlePoint.m_ny - m_startPoint.m_ny, 2));
+
+	if (abs(r - r1) <= 1)
+	{
+		double dblSpAngle = atan2(1. * (m_middlePoint.m_ny - m_startPoint.m_ny), (m_startPoint.m_nx - m_middlePoint.m_nx));
+		double dblSweepAngle = atan2(1. * (m_middlePoint.m_ny - m_finishPoint.m_ny), (m_finishPoint.m_nx - m_middlePoint.m_nx));
+		double dblTmpAngle = atan2(1. * (m_middlePoint.m_ny - pos.m_ny), (pos.m_nx - m_middlePoint.m_nx));
+
+		if (dblSpAngle < dblTmpAngle && dblTmpAngle < dblSweepAngle)
+			return true;
+	}
+
+	return false;
+}
+
 CArc CArc::GetLine(tinyxml2::XMLElement* figure)
 {
 	if (figure != nullptr)
 	{
-		Point sp, mp, fp;
+		Point m_startPoint, m_middlePoint, m_finishPoint;
 		tinyxml2::XMLElement* pointList = figure->ToElement();
 
-		sp = CArc::GetPoint(pointList->FirstChildElement("StartPoint"));
-		mp = CArc::GetPoint(pointList->FirstChildElement("CenterPoint"));
-		fp = CArc::GetPoint(pointList->FirstChildElement("FinishPoint"));
+		m_startPoint = CArc::GetPoint(pointList->FirstChildElement("StartPoint"));
+		m_middlePoint = CArc::GetPoint(pointList->FirstChildElement("CenterPoint"));
+		m_finishPoint = CArc::GetPoint(pointList->FirstChildElement("FinishPoint"));
 
-		return CArc(sp, mp, fp, Type::Arc);
+		return CArc(m_startPoint, m_middlePoint, m_finishPoint, Type::Arc);
 	}
 	else
 	{

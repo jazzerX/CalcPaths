@@ -20,7 +20,7 @@ protected: // создать только из сериализации
 // Атрибуты
 public:
 	std::list<std::shared_ptr<Path>> m_listOfPaths;
-
+	std::list<PathPtr> m_resultPath;
 
 // Переопределение
 public:

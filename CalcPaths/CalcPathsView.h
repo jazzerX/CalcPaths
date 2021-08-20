@@ -20,7 +20,7 @@ public:
 
 private:
 	std::unique_ptr<IDrawer> m_drawer;
-	std::list<PathPtr> m_resultPath;
+
 
 // Операции
 public:
@@ -36,7 +36,7 @@ protected:
 
 	afx_msg void onBuildPath(UINT msg);
 
-	void onClearDoc();
+	void onClearDoc(CCalcPathsDoc* pDoc);
 
 // Реализация
 public:
@@ -52,6 +52,8 @@ protected:
 protected:
 	DECLARE_MESSAGE_MAP()
 
+public:
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // версия отладки в CalcPathsView.cpp

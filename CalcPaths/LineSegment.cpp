@@ -10,7 +10,7 @@ CLineSegment::CLineSegment(Point startPoint, Point finishPoint, Type type)
 
 	m_type = type;
 
-	m_dblLength = ::sqrt(::pow(m_finishPoint.m_nx - m_startPoint.m_nx, 2) + ::pow(m_finishPoint.m_ny - m_startPoint.m_ny, 2));
+	m_dblLength = sqrt(pow(m_finishPoint.m_nx - m_startPoint.m_nx, 2) + pow(m_finishPoint.m_ny - m_startPoint.m_ny, 2));
 }
 
 Type CLineSegment::GetType() const
@@ -77,4 +77,17 @@ CLineSegment CLineSegment::GetLine(tinyxml2::XMLElement* figure)
 void CLineSegment::Draw(std::unique_ptr<IDrawer>& drawer) const
 {
 	drawer->DrawLine(m_startPoint, m_finishPoint);
+}
+
+bool CLineSegment::BelongFigure(Point pos)
+{
+	double l1 = sqrt(pow(pos.m_nx - m_startPoint.m_nx, 2) + pow(pos.m_ny - m_startPoint.m_ny, 2));
+	double l2 = sqrt(pow(pos.m_nx - m_finishPoint.m_nx, 2) + pow(pos.m_ny - m_finishPoint.m_ny, 2));
+
+	const double d = 0.2;
+
+	if (abs(m_dblLength - (l1 + l2)) <= d)
+		return true;
+
+	return false;
 }

@@ -41,6 +41,7 @@ CCalcPathsDoc::CCalcPathsDoc() noexcept
 
 CCalcPathsDoc::~CCalcPathsDoc()
 {
+	
 }
 
 BOOL CCalcPathsDoc::OnNewDocument()
@@ -108,6 +109,7 @@ void CCalcPathsDoc::OnFileOpen()
 	if (dlgFile.DoModal() == IDOK)
 	{
 		m_listOfPaths.clear();
+		m_resultPath.clear();
 		csPathName = dlgFile.GetPathName();
 	}
 	else 
@@ -173,7 +175,7 @@ void CCalcPathsDoc::OnFileOpen()
 				int nPosY = ::GetSystemMetrics(SM_CYSCREEN) / 2 - crSize.bottom / 2;
 
 				// Меняем размер окна
-				::SetWindowPos(wnd, HWND_TOPMOST, nPosX, nPosY, crSize.right, crSize.bottom, SWP_NOZORDER);
+				::SetWindowPos(wnd, nullptr, nPosX, nPosY, crSize.right, crSize.bottom , 0);
 			}
 			else
 			{

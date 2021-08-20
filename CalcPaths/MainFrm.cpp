@@ -50,7 +50,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("Не удалось создать строку состояния\n");
 		return -1;      // не удалось создать
 	}
-
+	
 	return 0;
 }
 
