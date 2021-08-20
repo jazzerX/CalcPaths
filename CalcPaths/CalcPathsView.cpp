@@ -178,15 +178,12 @@ void CCalcPathsView::OnLButtonDown(UINT nFlags, CPoint point)
 
 	for (auto& path : pDoc->m_resultPath)
 	{
-		double q = path.lock()->CheckBelongs(pos);
-		if ( q > 0)
+		double length = path.lock()->CheckBelongs(pos);
+		if (length > 0)
 		{
 			CString val;
-			val.Format(_T("%f"), q);
+			val.Format(_T("%f"), length);
 			AfxMessageBox(val);
-			//CString s = L"Text";
-			//CStatusBar* p = (CStatusBar*)AfxGetApp()->m_pMainWnd->GetDescendantWindow(ID_VIEW_STATUS_BAR);
-			//p->SetPaneText(1, val);
 			return;
 		}
 	}

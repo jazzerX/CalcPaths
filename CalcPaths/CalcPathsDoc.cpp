@@ -156,7 +156,9 @@ void CCalcPathsDoc::OnFileOpen()
 				GetNextView(pos)->GetClientRect(crDocSize);				
 
 				// Находим главное окно
-				HWND wnd = FindWindow(nullptr, _T("Расчет путей"));
+				CString csWndName;
+				AfxGetMainWnd()->GetWindowTextW(csWndName);
+				HWND wnd = FindWindow(nullptr, csWndName);
 
 				// Получаем размер окна
 				CRect crWndSize;
@@ -167,15 +169,16 @@ void CCalcPathsDoc::OnFileOpen()
 
 				// Считаем новый размер окна
 				CRect crSize;
-				crSize.right = (widthWnd - crDocSize.right) + nWidth;
-				crSize.bottom = (heightWnd - crDocSize.bottom) + nHeight;
+				crSize.right = (widthWnd - crDocSize.right) + nWidth + 1;
+				crSize.bottom = (heightWnd - crDocSize.bottom) + nHeight + 1;
 
 				// Размещаем окно по центру экрана
 				int nPosX = ::GetSystemMetrics(SM_CXSCREEN) / 2 - crSize.right / 2;
 				int nPosY = ::GetSystemMetrics(SM_CYSCREEN) / 2 - crSize.bottom / 2;
 
 				// Меняем размер окна
-				::SetWindowPos(wnd, nullptr, nPosX, nPosY, crSize.right, crSize.bottom , 0);
+				::SetWindowPos(wnd, nullptr, nPosX, nPosY, crSize.right, crSize.bottom, 0);
+				AfxGetMainWnd()->RedrawWindow();
 			}
 			else
 			{

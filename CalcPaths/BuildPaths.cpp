@@ -10,7 +10,6 @@ std::list<PathPtr> ShortestPath::MakePath(std::list<std::shared_ptr<Path>>& list
 	double dblCurrLength;
 
 	std::list<PathPtr> res;
-	std::weak_ptr<Path> minPath;
 
 	for (auto& objs : listPaths)
 	{
@@ -18,14 +17,17 @@ std::list<PathPtr> ShortestPath::MakePath(std::list<std::shared_ptr<Path>>& list
 		for (const auto& path : objs->m_path)
 			dblCurrLength += path->GetLength();
 
-		if (dblCurrLength <= dblMinLength)
+		if (dblCurrLength < dblMinLength)
 		{
+			res.clear();
 			dblMinLength = dblCurrLength;
 			res.emplace_back(objs);
 		}
+		else
+			if (abs(dblCurrLength - dblMinLength) < 1e-5)
+				res.emplace_back(objs);
+		
 	}
-
-	res.emplace_back(minPath);
 
 	return res;
 }
@@ -36,7 +38,6 @@ std::list<PathPtr> LongestPath::MakePath(std::list<std::shared_ptr<Path>>& listP
 	double dblCurrLength;
 
 	std::list<PathPtr> res;
-	std::weak_ptr<Path> maxPath;
 
 	for (auto& objs : listPaths)
 	{
@@ -46,12 +47,14 @@ std::list<PathPtr> LongestPath::MakePath(std::list<std::shared_ptr<Path>>& listP
 
 		if (dblCurrLength > dblMaxLength)
 		{
+			res.clear();
 			dblMaxLength = dblCurrLength;
-			maxPath = objs;
+			res.emplace_back(objs);
 		}
+		else
+			if (abs(dblCurrLength - dblMaxLength) < 1e-5)
+				res.emplace_back(objs);
 	}
-
-	res.emplace_back(maxPath);
 
 	return res;
 }
