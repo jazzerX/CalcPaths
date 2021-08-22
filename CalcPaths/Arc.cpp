@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Arc.h"
 
+constexpr double g_dblPI = 3.14159265358979323846264338327950288;
+
 CArc::CArc(Point startPoint, Point middlePoint, Point finishPoint, Type type)
 {
 	m_startPoint = startPoint;
@@ -24,7 +26,11 @@ double CArc::CalcLength()
 	v2.m_ny = m_finishPoint.m_ny - m_middlePoint.m_ny;
 
 	double angle = acos((v1.m_nx * v2.m_nx + v1.m_ny * v2.m_ny) / (sqrt(v1.m_nx * v1.m_nx + v1.m_ny * v1.m_ny) * sqrt(v2.m_nx * v2.m_nx + v2.m_ny * v2.m_ny)));
-	return r * angle;
+	
+	if (m_startPoint.m_nx < m_finishPoint.m_nx)
+		return r * angle;
+	else
+		return 2 * g_dblPI * r - (r * angle);
 }
 
 
@@ -83,13 +89,13 @@ bool CArc::BelongFigure(Point pos)
 	double r = sqrt(pow(m_middlePoint.m_nx - pos.m_nx, 2) + pow(m_middlePoint.m_ny - pos.m_ny, 2));
 	double r1 = sqrt(pow(m_middlePoint.m_nx - m_startPoint.m_nx, 2) + pow(m_middlePoint.m_ny - m_startPoint.m_ny, 2));
 
-	if (abs(r - r1) <= 1)
+	if (abs(r - r1) <= 5)
 	{
 		double dblSpAngle = atan2(1. * (m_middlePoint.m_ny - m_startPoint.m_ny), (m_startPoint.m_nx - m_middlePoint.m_nx));
 		double dblSweepAngle = atan2(1. * (m_middlePoint.m_ny - m_finishPoint.m_ny), (m_finishPoint.m_nx - m_middlePoint.m_nx));
 		double dblTmpAngle = atan2(1. * (m_middlePoint.m_ny - pos.m_ny), (pos.m_nx - m_middlePoint.m_nx));
 
-		if (dblSpAngle < dblTmpAngle && dblTmpAngle < dblSweepAngle)
+		if (dblSpAngle < dblTmpAngle)
 			return true;
 	}
 
