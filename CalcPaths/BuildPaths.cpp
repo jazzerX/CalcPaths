@@ -120,7 +120,6 @@ Task::Task(std::unique_ptr<IBuildPath> path)
 
 void Task::SetStrategy(std::unique_ptr<IBuildPath> path)
 {
-	m_buildPath.~unique_ptr();
 	m_buildPath = std::move(path);
 }
 

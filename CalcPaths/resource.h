@@ -22,8 +22,8 @@
 #define ID_ONLY_LINES                   32773
 #define ID_ONLY_ARCS                    32784
 #define ID_CLEAR_DOCUMENT               32785
-#define ID_GDI_DRAWER                   32786
-#define ID_ALL_PATHS                    32787
+#define ID_ALL_PATHS                    32786
+#define ID_GDI_DRAWER                   32787
 
 // Next default values for new objects
 // 

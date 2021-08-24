@@ -27,7 +27,6 @@ BEGIN_MESSAGE_MAP(CCalcPathsView, CView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
-	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 
 	ON_COMMAND_RANGE(ID_SHORTEST_PATH, ID_ALL_PATHS, &CCalcPathsView::onBuildPath)
 
@@ -142,8 +141,10 @@ void CCalcPathsView::onBuildPath(UINT msg)
 		task = std::make_unique<Task>(std::make_unique<AllPaths>());
 		break;	
 	case ID_CLEAR_DOCUMENT:
+	{
 		onClearDoc(pDoc);
 		return;
+	}
 	}
 
 	onClearDoc(pDoc);

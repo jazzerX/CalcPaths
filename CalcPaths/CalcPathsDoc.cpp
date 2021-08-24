@@ -119,12 +119,13 @@ void CCalcPathsDoc::OnFileOpen()
 
 	tinyxml2::XMLDocument xmlDoc;
 	xmlDoc.LoadFile(csaFilePath);
+	tinyxml2::XMLElement* rootElement = xmlDoc.RootElement();
 
-	if (xmlDoc.ErrorID() != tinyxml2::XML_ERROR_FILE_NOT_FOUND && xmlDoc.ErrorID() != tinyxml2::XML_ERROR_MISMATCHED_ELEMENT)
+	if (xmlDoc.ErrorID() != tinyxml2::XML_ERROR_FILE_NOT_FOUND && xmlDoc.ErrorID() != tinyxml2::XML_ERROR_MISMATCHED_ELEMENT
+		&& rootElement)
 	{
 		Path objList;
 
-		tinyxml2::XMLElement* rootElement = xmlDoc.RootElement();
 		tinyxml2::XMLElement* objects = rootElement->ToElement();
 
 		for (tinyxml2::XMLElement* obj = objects->FirstChildElement(); obj != nullptr; obj = obj->NextSiblingElement())
